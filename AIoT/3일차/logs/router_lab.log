@@ -1,0 +1,13 @@
+2023-06-11 16:04:38.115 | INFO     | router_lab.__main__:__post_init__:37 | Router Lab Backend! will be on localhost:7000
+2023-06-11 16:04:38.120 | INFO     | router_lab.parts:add_sio_event_handler:82 | Socket handler registered: connect
+2023-06-11 16:04:38.121 | INFO     | router_lab.parts:add_sio_event_handler:82 | Socket handler registered: disconnect
+2023-06-11 16:04:38.122 | INFO     | router_lab.parts:add_sio_event_handler:82 | Socket handler registered: list_impls
+2023-06-11 16:04:38.124 | INFO     | router_lab.parts:add_sio_event_handler:82 | Socket handler registered: node_stats
+2023-06-11 16:04:38.125 | INFO     | router_lab.parts:add_sio_event_handler:82 | Socket handler registered: subscribe_world_logs
+2023-06-11 16:04:38.126 | INFO     | router_lab.parts:add_sio_event_handler:82 | Socket handler registered: subscribe_world_stats
+2023-06-11 16:04:38.127 | INFO     | router_lab.parts:add_sio_event_handler:82 | Socket handler registered: world_configure
+2023-06-11 16:04:38.128 | INFO     | router_lab.parts:add_sio_event_handler:82 | Socket handler registered: world_info
+2023-06-11 16:04:38.130 | INFO     | router_lab.parts:add_sio_event_handler:82 | Socket handler registered: world_start
+2023-06-11 16:04:38.131 | INFO     | router_lab.parts:add_sio_event_handler:82 | Socket handler registered: world_start_activity
+2023-06-11 16:04:38.132 | INFO     | router_lab.parts:add_sio_event_handler:82 | Socket handler registered: world_stop
+2023-06-11 16:04:38.134 | SUCCESS  | router_lab.__main__:__post_init__:120 | Router Lab Backend is ready!

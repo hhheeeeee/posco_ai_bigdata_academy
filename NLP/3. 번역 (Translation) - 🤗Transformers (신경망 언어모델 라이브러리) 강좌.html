@@ -1,0 +1,2195 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="mzkAy71X1qQFWihQN535LoiToXg34MUg9nuor7Og9E8">
+    <meta name="naver-site-verification" content="d7c116bce998e6961b8db93c8592550f1a82119f">
+    <meta name="description" content="온라인 책을 제작 공유하는 플랫폼 서비스">
+
+    
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="위키독스">
+<meta property="og:title" content="3. 번역 (Translation)">
+<meta property="og:description" content="이제 번역(translation)에 대해서 알아봅시다. 이것은 또 다른 형태의 [sequence-to-sequence 태스크](https://huggingface.co/cours…">
+<meta property="og:image" content="https://wikidocs.net/images/book/hf_course.png">
+<meta property="og:url" content="https://wikidocs.net/166832">
+
+
+    <link rel="shortcut icon" type="image/x-icon" href="https://wikidocs.net/static/img/favicon.ico">
+    <link rel="canonical" href="https://wikidocs.net/book/1">
+    <title>3. 번역 (Translation) - 🤗Transformers (신경망 언어모델 라이브러리) 강좌</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    -->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    
+    <link type="text/css" href="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/style_stack.css" rel="stylesheet" media="screen">
+    <script src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/f.txt" nonce="6eeff0da-a0d2-49f8-a1ae-70b8f09b49f6"></script><script src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/f_003.txt" nonce="6eeff0da-a0d2-49f8-a1ae-70b8f09b49f6" id="google_shimpl"></script><script type="text/javascript" async="" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/ga.js"></script><script src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/jquery.min.js" type="text/javascript"></script>
+    <script src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous" type="text/javascript"></script>
+    <script type="text/javascript" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/utils.js"></script>
+    <script type="text/javascript" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/base.js"></script>
+    <script type="text/javascript">
+    function recommend_book(book_id) {
+        var msg = [];
+        msg.push('<div class="alert alert-info">');
+        msg.push('<p><strong>책을 추천합니다.</strong></p>');
+        msg.push('정말로 추천하시겠습니까?</p>');
+        msg.push('</div>');
+        msg.push('<span class="muted">※ 추천취소는 불가능합니다.</span>');
+
+        apprise(msg.join(''), {'verify':true}, function(r) {
+            if(r) {
+                location.href = "/book/recommend/"+book_id;
+            }
+        });
+        return;
+    }
+    </script>
+    
+    
+
+
+<link type="text/css" href="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/apprise.min.css" rel="stylesheet">
+<link type="text/css" href="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/markdown_stack.css" rel="stylesheet">
+<link type="text/css" href="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/bootstrap-treeview.min.css" rel="stylesheet">
+<link type="text/css" href="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/copycode.css" rel="stylesheet">
+
+<!--  -->
+
+<script type="text/javascript" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/apprise-1.5.min.js"></script>
+<script type="text/javascript" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/jquery.nicescroll.js"></script>
+<!-- <script type="text/javascript" src="/static/book/js/page.js?v=20210601_01"></script> -->
+<link rel="stylesheet" href="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/default.min.css">
+<script src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/highlight.min.js" type="text/javascript"></script>
+
+
+
+<!-- 수식입력 mathjax -->
+<script type="text/javascript">
+window.MathJax = {
+  options: {
+    ignoreHtmlClass: 'tex2jax_ignore',
+    processHtmlClass: 'tex2jax_process'
+  },
+  loader: {load: ['[tex]/physics', '[tex]/braket']},
+  tex: {
+    inlineMath: [['$','$'], ['\\(','\\)']],
+    packages: {'[+]': ['physics', 'braket']}
+  }
+};
+</script>
+<script src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/polyfill.min.js" type="text/javascript"></script>
+<script async="" id="MathJax-script" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/tex-mml-chtml.js" type="text/javascript"></script>
+<!-- 수식입력 mathjax -->
+
+<script type="text/javascript">
+$(document).ready(function () {
+//    $("pre").addClass("prettyprint");
+//    prettyPrint();
+
+    $("#show_toc_btn").click(function () {
+        $(".toc").removeClass("hide");
+        $(".toc").show();
+        $("#show_toc_btn").hide();
+    });
+
+    $("#feedback_btn").click(function () {
+
+        var page_id = $("#page_id").val();
+        var email = $("#email").val();
+        var feedback = $("#feedback").val();
+
+        if (!email) {
+            apprise('답장받을 이메일을 입력하세요.', {}, function () {
+                $("#email").focus();
+            });
+            return;
+        }
+
+        if (!validateEmail(email)) {
+            apprise('이메일을 정확하게 입력 해 주세요.', {}, function () {
+                $("#email").focus();
+            });
+            return;
+        }
+
+        if (!feedback) {
+            apprise('피드백을 입력하세요.', {}, function () {
+                $("#feedback").focus();
+            });
+            return;
+        }
+
+        $.post("/feedback", {
+            "page_id": page_id,
+            "email": email,
+            "feedback": feedback
+        }, function (data) {
+            apprise('피드백을 남겨주셔서 감사합니다.', {}, function () {
+                $('#myModal').modal('hide');
+            });
+        }, "html");
+
+    });
+
+
+
+    $("#report_btn").click(function () {
+
+        var comment_id = $("#comment_id").val();
+        var report = $("#report").val();
+
+        if (!report) {
+            apprise('신고사유를 입력하세요.', {}, function () {
+                $("#report").focus();
+            });
+            return;
+        }
+
+        $.post("/page/comment/report", {
+            "comment_id": comment_id,
+            "report": report
+        }, function (result) {
+            if(result.success) {
+                apprise('신고가 접수되었습니다. 검토까지는 최대 24시간 소요됩니다.', {}, function () {
+                    $('#reportModal').modal('hide');
+                });
+            }else {
+                $('#reportModal').modal('hide');
+                alert(result.message);
+            }
+            
+        }, "json");
+
+    });
+
+    $("body").on('click', "#comment_btn", function () {
+        var content = $("#content").val();
+        if (!content) {
+            apprise('댓글을 입력해 주세요', {verify: false}, function (r) {
+                $("#content").focus();
+            });
+            return false;
+        }
+
+        $.post("/page/comment/save", {
+            "page_id": $("#page_id").val(),
+            "content": content
+        }, function (result) {
+            if (result.success) {
+                get_page_comments(result.page_id);
+            }else {
+                alert(result.message);
+            }
+        }, "json");
+    });
+
+    $('a[href="#top"]').click(function () {
+        $('html,body').animate({ scrollTop: $("body").offset().top},
+            {duration: 'normal', easing: 'swing'});
+        return false;
+    });
+
+    var hash = window.location.hash;
+    if(hash.indexOf("#comment") != -1) {
+        show_comments();
+    }
+
+//    resizeMenu();
+});
+
+$(window).load(function () {
+    if (!TOC_HEIGHT) {
+//        init_toc();
+    }
+
+    resizeMenu();
+});
+
+function resizeMenu() {
+    var wh = $(window).height() - 220;
+    var ph = get_height(".page");
+    var h = Math.max(wh, ph);
+    $(".scrollable-menu").css("max-height", h+"px");
+}
+
+function touch_toc() {
+    if ($(".page img").length == 0) {
+        init_toc();
+    }
+}
+
+var TOC_HEIGHT;
+function init_toc() {
+    var selected_toc_li_top = $(".selected_toc_li").offset().top;
+    var page_height = get_height(".page");
+    var toc_height = get_height(".toc-area");
+    TOC_HEIGHT = toc_height;
+
+//    console.log("page_height:"+page_height);
+
+    if (toc_height >= 480) {
+        if (page_height - 145 <= 480) {
+            $(".toc-area").css("height", (page_height - 145) + "px");
+            $(".toc-open").show();
+            $(".toc-area").niceScroll({"cursorcolor": "#888"});
+            $(".toc-area").scrollTop(selected_toc_li_top - 200);
+        } else if (toc_height > 480) {
+            $(".toc-area").css("height", "480px");
+            $(".toc-open").show();
+            $(".toc-area").niceScroll({"cursorcolor": "#888"});
+            $(".toc-area").scrollTop(selected_toc_li_top - 200);
+        }
+    }
+
+    if (page_height > 480 + 300) {
+        $(".toc-ads").show();
+    }
+}
+function open_toc() {
+    $(".toc-area").css("overflow-y", "visible");
+    $(".toc-area").css("height", TOC_HEIGHT + "px");
+    $(".toc-open").hide();
+}
+function get_height(element) {
+    var _height = $(element).css("height");
+    return parseInt(_height.split("px")[0]);
+}
+
+function remove_comment(comment_id) {
+    apprise('정말로 삭제하시겠습니까?', {verify: true}, function (r) {
+        if (r) {
+            $.post("/page/comment/remove", {
+                "comment_id": comment_id
+            }, function (result) {
+                if (result.success) {
+                    get_page_comments(result.page_id);
+                }else {
+                    alert(result.message);
+                }
+                // $(".comments").html(data);
+            }, "json");
+        }
+    });
+}
+
+function reply_comment(comment_name) {
+    $(".user_comments #content").val("@"+comment_name+"님 ");
+    $(".user_comments #content").focus();
+}
+
+function show_comments() {
+    $(".user_comments").toggle();
+}
+
+function show_book_comments() {
+    $(".pages").css("display", "none");
+    $(".comments").toggle();
+}
+
+function show_book_pages() {
+    $(".comments").css("display", "none");
+    $(".pages").toggle();
+
+}
+
+function get_all_page_comments(page_id) {
+    $.ajax({
+        type: "POST",
+        url: "/page/comment/all",
+        data: {'page_id': page_id},
+        dataType: "html",
+        success: function(data) {
+            $("#page_all_comments").html(data);
+        }
+    });
+}  
+
+function get_page_comments(page_id) {
+    $.ajax({
+        type: "POST",
+        url: "/page/comment/get",
+        data: {'page_id': page_id},
+        dataType: "html",
+        success: function(data) {
+            $(".comments").html(data);
+            $("#content").val("");
+        }
+    });
+}
+
+function report_modal(comment_id) {
+    // console.log(comment_id);
+    $("#comment_id").val(comment_id);
+    $('#reportModal').modal('show')
+}
+</script>
+
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-2686629-3']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/js.js" type="text/javascript"></script>
+    <script type="text/javascript">
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-6N5MJRGLWG');
+    </script>
+<script defer="defer" referrerpolicy="origin" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/s.js"></script><script nonce="6eeff0da-a0d2-49f8-a1ae-70b8f09b49f6">(function(w,d){!function(dK,dL,dM,dN){dK[dM]=dK[dM]||{};dK[dM].executed=[];dK.zaraz={deferred:[],listeners:[]};dK.zaraz.q=[];dK.zaraz._f=function(dO){return function(){var dP=Array.prototype.slice.call(arguments);dK.zaraz.q.push({m:dO,a:dP})}};for(const dQ of["track","set","debug"])dK.zaraz[dQ]=dK.zaraz._f(dQ);dK.zaraz.init=()=>{var dR=dL.getElementsByTagName(dN)[0],dS=dL.createElement(dN),dT=dL.getElementsByTagName("title")[0];dT&&(dK[dM].t=dL.getElementsByTagName("title")[0].text);dK[dM].x=Math.random();dK[dM].w=dK.screen.width;dK[dM].h=dK.screen.height;dK[dM].j=dK.innerHeight;dK[dM].e=dK.innerWidth;dK[dM].l=dK.location.href;dK[dM].r=dL.referrer;dK[dM].k=dK.screen.colorDepth;dK[dM].n=dL.characterSet;dK[dM].o=(new Date).getTimezoneOffset();if(dK.dataLayer)for(const dX of Object.entries(Object.entries(dataLayer).reduce(((dY,dZ)=>({...dY[1],...dZ[1]})),{})))zaraz.set(dX[0],dX[1],{scope:"page"});dK[dM].q=[];for(;dK.zaraz.q.length;){const d_=dK.zaraz.q.shift();dK[dM].q.push(d_)}dS.defer=!0;for(const ea of[localStorage,sessionStorage])Object.keys(ea||{}).filter((ec=>ec.startsWith("_zaraz_"))).forEach((eb=>{try{dK[dM]["z_"+eb.slice(7)]=JSON.parse(ea.getItem(eb))}catch{dK[dM]["z_"+eb.slice(7)]=ea.getItem(eb)}}));dS.referrerPolicy="origin";dS.src="/cdn-cgi/zaraz/s.js?z="+btoa(encodeURIComponent(JSON.stringify(dK[dM])));dR.parentNode.insertBefore(dS,dR)};["complete","interactive"].includes(dL.readyState)?zaraz.init():dK.addEventListener("DOMContentLoaded",zaraz.init)}(w,d,"zarazData","script");})(window,document);</script><meta http-equiv="origin-trial" content="A7CQXglZzTrThjGTBEn1rWTxHOEtkWivwzgea+NjyardrwlieSjVuyG44PkYgIPGs8Q9svD8sF3Yedn0BBBjXAkAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A3vKT9yxRPjmXN3DpIiz58f5JykcWHjUo/W7hvmtjgh9jPpQgem9VbADiNovG8NkO6mRmk70Kex8/KUqAYWVWAEAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A4A26Ymj79UVY7C7JGUS4BG1s7MdcDokAQf/RP0paks+RoTYbXHxceT/5L4iKcsleFCngi75YfNRGW2+SpVv1ggAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="As0hBNJ8h++fNYlkq8cTye2qDLyom8NddByiVytXGGD0YVE+2CEuTCpqXMDxdhOMILKoaiaYifwEvCRlJ/9GcQ8AAAB8eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3MTk1MzI3OTksImlzU3ViZG9tYWluIjp0cnVlfQ=="><meta http-equiv="origin-trial" content="AgRYsXo24ypxC89CJanC+JgEmraCCBebKl8ZmG7Tj5oJNx0cmH0NtNRZs3NB5ubhpbX/bIt7l2zJOSyO64NGmwMAAACCeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3MTk1MzI3OTksImlzU3ViZG9tYWluIjp0cnVlfQ=="><meta http-equiv="origin-trial" content="A7CQXglZzTrThjGTBEn1rWTxHOEtkWivwzgea+NjyardrwlieSjVuyG44PkYgIPGs8Q9svD8sF3Yedn0BBBjXAkAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A3vKT9yxRPjmXN3DpIiz58f5JykcWHjUo/W7hvmtjgh9jPpQgem9VbADiNovG8NkO6mRmk70Kex8/KUqAYWVWAEAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A4A26Ymj79UVY7C7JGUS4BG1s7MdcDokAQf/RP0paks+RoTYbXHxceT/5L4iKcsleFCngi75YfNRGW2+SpVv1ggAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="As0hBNJ8h++fNYlkq8cTye2qDLyom8NddByiVytXGGD0YVE+2CEuTCpqXMDxdhOMILKoaiaYifwEvCRlJ/9GcQ8AAAB8eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3MTk1MzI3OTksImlzU3ViZG9tYWluIjp0cnVlfQ=="><meta http-equiv="origin-trial" content="AgRYsXo24ypxC89CJanC+JgEmraCCBebKl8ZmG7Tj5oJNx0cmH0NtNRZs3NB5ubhpbX/bIt7l2zJOSyO64NGmwMAAACCeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3MTk1MzI3OTksImlzU3ViZG9tYWluIjp0cnVlfQ=="><meta http-equiv="origin-trial" content="A7CQXglZzTrThjGTBEn1rWTxHOEtkWivwzgea+NjyardrwlieSjVuyG44PkYgIPGs8Q9svD8sF3Yedn0BBBjXAkAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A3vKT9yxRPjmXN3DpIiz58f5JykcWHjUo/W7hvmtjgh9jPpQgem9VbADiNovG8NkO6mRmk70Kex8/KUqAYWVWAEAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A4A26Ymj79UVY7C7JGUS4BG1s7MdcDokAQf/RP0paks+RoTYbXHxceT/5L4iKcsleFCngi75YfNRGW2+SpVv1ggAAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiUHJpdmFjeVNhbmRib3hBZHNBUElzIiwiZXhwaXJ5IjoxNjk1MTY3OTk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="As0hBNJ8h++fNYlkq8cTye2qDLyom8NddByiVytXGGD0YVE+2CEuTCpqXMDxdhOMILKoaiaYifwEvCRlJ/9GcQ8AAAB8eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3MTk1MzI3OTksImlzU3ViZG9tYWluIjp0cnVlfQ=="><meta http-equiv="origin-trial" content="AgRYsXo24ypxC89CJanC+JgEmraCCBebKl8ZmG7Tj5oJNx0cmH0NtNRZs3NB5ubhpbX/bIt7l2zJOSyO64NGmwMAAACCeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiV2ViVmlld1hSZXF1ZXN0ZWRXaXRoRGVwcmVjYXRpb24iLCJleHBpcnkiOjE3MTk1MzI3OTksImlzU3ViZG9tYWluIjp0cnVlfQ=="><script src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/physics.js" charset="UTF-8"></script><script src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/braket.js" charset="UTF-8"></script><style type="text/css">.CtxtMenu_InfoClose {  top:.2em; right:.2em;}
+.CtxtMenu_InfoContent {  overflow:auto; text-align:left; font-size:80%;  padding:.4em .6em; border:1px inset; margin:1em 0px;  max-height:20em; max-width:30em; background-color:#EEEEEE;  white-space:normal;}
+.CtxtMenu_Info.CtxtMenu_MousePost {outline:none;}
+.CtxtMenu_Info {  position:fixed; left:50%; width:auto; text-align:center;  border:3px outset; padding:1em 2em; background-color:#DDDDDD;  color:black;  cursor:default; font-family:message-box; font-size:120%;  font-style:normal; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 15px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius:15px;               /* Safari and Chrome */  -moz-border-radius:15px;                  /* Firefox */  -khtml-border-radius:15px;                /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color="gray", Positive="true"); /* IE */}
+</style><style type="text/css">.CtxtMenu_MenuClose {  position:absolute;  cursor:pointer;  display:inline-block;  border:2px solid #AAA;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  font-family: "Courier New", Courier;  font-size:24px;  color:#F0F0F0}
+.CtxtMenu_MenuClose span {  display:block; background-color:#AAA; border:1.5px solid;  border-radius:18px;  -webkit-border-radius: 18px;             /* Safari and Chrome */  -moz-border-radius: 18px;                /* Firefox */  -khtml-border-radius: 18px;              /* Konqueror */  line-height:0;  padding:8px 0 6px     /* may need to be browser-specific */}
+.CtxtMenu_MenuClose:hover {  color:white!important;  border:2px solid #CCC!important}
+.CtxtMenu_MenuClose:hover span {  background-color:#CCC!important}
+.CtxtMenu_MenuClose:hover:focus {  outline:none}
+</style><style type="text/css">.CtxtMenu_Menu {  position:absolute;  background-color:white;  color:black;  width:auto; padding:5px 0px;  border:1px solid #CCCCCC; margin:0; cursor:default;  font: menu; text-align:left; text-indent:0; text-transform:none;  line-height:normal; letter-spacing:normal; word-spacing:normal;  word-wrap:normal; white-space:nowrap; float:none; z-index:201;  border-radius: 5px;                     /* Opera 10.5 and IE9 */  -webkit-border-radius: 5px;             /* Safari and Chrome */  -moz-border-radius: 5px;                /* Firefox */  -khtml-border-radius: 5px;              /* Konqueror */  box-shadow:0px 10px 20px #808080;         /* Opera 10.5 and IE9 */  -webkit-box-shadow:0px 10px 20px #808080; /* Safari 3 & Chrome */  -moz-box-shadow:0px 10px 20px #808080;    /* Forefox 3.5 */  -khtml-box-shadow:0px 10px 20px #808080;  /* Konqueror */}
+.CtxtMenu_MenuItem {  padding: 1px 2em;  background:transparent;}
+.CtxtMenu_MenuArrow {  position:absolute; right:.5em; padding-top:.25em; color:#666666;  font-family: null; font-size: .75em}
+.CtxtMenu_MenuActive .CtxtMenu_MenuArrow {color:white}
+.CtxtMenu_MenuArrow.CtxtMenu_RTL {left:.5em; right:auto}
+.CtxtMenu_MenuCheck {  position:absolute; left:.7em;  font-family: null}
+.CtxtMenu_MenuCheck.CtxtMenu_RTL { right:.7em; left:auto }
+.CtxtMenu_MenuRadioCheck {  position:absolute; left: .7em;}
+.CtxtMenu_MenuRadioCheck.CtxtMenu_RTL {  right: .7em; left:auto}
+.CtxtMenu_MenuInputBox {  padding-left: 1em; right:.5em; color:#666666;  font-family: null;}
+.CtxtMenu_MenuInputBox.CtxtMenu_RTL {  left: .1em;}
+.CtxtMenu_MenuComboBox {  left:.1em; padding-bottom:.5em;}
+.CtxtMenu_MenuSlider {  left: .1em;}
+.CtxtMenu_SliderValue {  position:absolute; right:.1em; padding-top:.25em; color:#333333;  font-size: .75em}
+.CtxtMenu_SliderBar {  outline: none; background: #d3d3d3}
+.CtxtMenu_MenuLabel {  padding: 1px 2em 3px 1.33em;  font-style:italic}
+.CtxtMenu_MenuRule {  border-top: 1px solid #DDDDDD;  margin: 4px 3px;}
+.CtxtMenu_MenuDisabled {  color:GrayText}
+.CtxtMenu_MenuActive {  background-color: #606872;  color: white;}
+.CtxtMenu_MenuDisabled:focus {  background-color: #E8E8E8}
+.CtxtMenu_MenuLabel:focus {  background-color: #E8E8E8}
+.CtxtMenu_ContextMenu:focus {  outline:none}
+.CtxtMenu_ContextMenu .CtxtMenu_MenuItem:focus {  outline:none}
+.CtxtMenu_SelectionMenu {  position:relative; float:left;  border-bottom: none; -webkit-box-shadow:none; -webkit-border-radius:0px; }
+.CtxtMenu_SelectionItem {  padding-right: 1em;}
+.CtxtMenu_Selection {  right: 40%; width:50%; }
+.CtxtMenu_SelectionBox {  padding: 0em; max-height:20em; max-width: none;  background-color:#FFFFFF;}
+.CtxtMenu_SelectionDivider {  clear: both; border-top: 2px solid #000000;}
+.CtxtMenu_Menu .CtxtMenu_MenuClose {  top:-10px; left:-10px}
+</style><style id="MJX-CHTML-styles">
+mjx-container[jax="CHTML"] {
+  line-height: 0;
+}
+
+mjx-container [space="1"] {
+  margin-left: .111em;
+}
+
+mjx-container [space="2"] {
+  margin-left: .167em;
+}
+
+mjx-container [space="3"] {
+  margin-left: .222em;
+}
+
+mjx-container [space="4"] {
+  margin-left: .278em;
+}
+
+mjx-container [space="5"] {
+  margin-left: .333em;
+}
+
+mjx-container [rspace="1"] {
+  margin-right: .111em;
+}
+
+mjx-container [rspace="2"] {
+  margin-right: .167em;
+}
+
+mjx-container [rspace="3"] {
+  margin-right: .222em;
+}
+
+mjx-container [rspace="4"] {
+  margin-right: .278em;
+}
+
+mjx-container [rspace="5"] {
+  margin-right: .333em;
+}
+
+mjx-container [size="s"] {
+  font-size: 70.7%;
+}
+
+mjx-container [size="ss"] {
+  font-size: 50%;
+}
+
+mjx-container [size="Tn"] {
+  font-size: 60%;
+}
+
+mjx-container [size="sm"] {
+  font-size: 85%;
+}
+
+mjx-container [size="lg"] {
+  font-size: 120%;
+}
+
+mjx-container [size="Lg"] {
+  font-size: 144%;
+}
+
+mjx-container [size="LG"] {
+  font-size: 173%;
+}
+
+mjx-container [size="hg"] {
+  font-size: 207%;
+}
+
+mjx-container [size="HG"] {
+  font-size: 249%;
+}
+
+mjx-container [width="full"] {
+  width: 100%;
+}
+
+mjx-box {
+  display: inline-block;
+}
+
+mjx-block {
+  display: block;
+}
+
+mjx-itable {
+  display: inline-table;
+}
+
+mjx-row {
+  display: table-row;
+}
+
+mjx-row > * {
+  display: table-cell;
+}
+
+mjx-mtext {
+  display: inline-block;
+}
+
+mjx-mstyle {
+  display: inline-block;
+}
+
+mjx-merror {
+  display: inline-block;
+  color: red;
+  background-color: yellow;
+}
+
+mjx-mphantom {
+  visibility: hidden;
+}
+
+_::-webkit-full-page-media, _:future, :root mjx-container {
+  will-change: opacity;
+}
+
+mjx-assistive-mml {
+  position: absolute !important;
+  top: 0px;
+  left: 0px;
+  clip: rect(1px, 1px, 1px, 1px);
+  padding: 1px 0px 0px 0px !important;
+  border: 0px !important;
+  display: block !important;
+  width: auto !important;
+  overflow: hidden !important;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+mjx-assistive-mml[display="block"] {
+  width: 100% !important;
+}
+
+mjx-c::before {
+  display: block;
+  width: 0;
+}
+
+.MJX-TEX {
+  font-family: MJXZERO, MJXTEX;
+}
+
+.TEX-B {
+  font-family: MJXZERO, MJXTEX-B;
+}
+
+.TEX-I {
+  font-family: MJXZERO, MJXTEX-I;
+}
+
+.TEX-MI {
+  font-family: MJXZERO, MJXTEX-MI;
+}
+
+.TEX-BI {
+  font-family: MJXZERO, MJXTEX-BI;
+}
+
+.TEX-S1 {
+  font-family: MJXZERO, MJXTEX-S1;
+}
+
+.TEX-S2 {
+  font-family: MJXZERO, MJXTEX-S2;
+}
+
+.TEX-S3 {
+  font-family: MJXZERO, MJXTEX-S3;
+}
+
+.TEX-S4 {
+  font-family: MJXZERO, MJXTEX-S4;
+}
+
+.TEX-A {
+  font-family: MJXZERO, MJXTEX-A;
+}
+
+.TEX-C {
+  font-family: MJXZERO, MJXTEX-C;
+}
+
+.TEX-CB {
+  font-family: MJXZERO, MJXTEX-CB;
+}
+
+.TEX-FR {
+  font-family: MJXZERO, MJXTEX-FR;
+}
+
+.TEX-FRB {
+  font-family: MJXZERO, MJXTEX-FRB;
+}
+
+.TEX-SS {
+  font-family: MJXZERO, MJXTEX-SS;
+}
+
+.TEX-SSB {
+  font-family: MJXZERO, MJXTEX-SSB;
+}
+
+.TEX-SSI {
+  font-family: MJXZERO, MJXTEX-SSI;
+}
+
+.TEX-SC {
+  font-family: MJXZERO, MJXTEX-SC;
+}
+
+.TEX-T {
+  font-family: MJXZERO, MJXTEX-T;
+}
+
+.TEX-V {
+  font-family: MJXZERO, MJXTEX-V;
+}
+
+.TEX-VB {
+  font-family: MJXZERO, MJXTEX-VB;
+}
+
+mjx-stretchy-v mjx-c, mjx-stretchy-h mjx-c {
+  font-family: MJXZERO, MJXTEX-S1, MJXTEX-S4, MJXTEX, MJXTEX-A ! important;
+}
+
+@font-face /* 0 */ {
+  font-family: MJXZERO;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Zero.woff") format("woff");
+}
+
+@font-face /* 1 */ {
+  font-family: MJXTEX;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Regular.woff") format("woff");
+}
+
+@font-face /* 2 */ {
+  font-family: MJXTEX-B;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Bold.woff") format("woff");
+}
+
+@font-face /* 3 */ {
+  font-family: MJXTEX-I;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-Italic.woff") format("woff");
+}
+
+@font-face /* 4 */ {
+  font-family: MJXTEX-MI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Main-Italic.woff") format("woff");
+}
+
+@font-face /* 5 */ {
+  font-family: MJXTEX-BI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Math-BoldItalic.woff") format("woff");
+}
+
+@font-face /* 6 */ {
+  font-family: MJXTEX-S1;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size1-Regular.woff") format("woff");
+}
+
+@font-face /* 7 */ {
+  font-family: MJXTEX-S2;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size2-Regular.woff") format("woff");
+}
+
+@font-face /* 8 */ {
+  font-family: MJXTEX-S3;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size3-Regular.woff") format("woff");
+}
+
+@font-face /* 9 */ {
+  font-family: MJXTEX-S4;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Size4-Regular.woff") format("woff");
+}
+
+@font-face /* 10 */ {
+  font-family: MJXTEX-A;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_AMS-Regular.woff") format("woff");
+}
+
+@font-face /* 11 */ {
+  font-family: MJXTEX-C;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Regular.woff") format("woff");
+}
+
+@font-face /* 12 */ {
+  font-family: MJXTEX-CB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Calligraphic-Bold.woff") format("woff");
+}
+
+@font-face /* 13 */ {
+  font-family: MJXTEX-FR;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Regular.woff") format("woff");
+}
+
+@font-face /* 14 */ {
+  font-family: MJXTEX-FRB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Fraktur-Bold.woff") format("woff");
+}
+
+@font-face /* 15 */ {
+  font-family: MJXTEX-SS;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Regular.woff") format("woff");
+}
+
+@font-face /* 16 */ {
+  font-family: MJXTEX-SSB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Bold.woff") format("woff");
+}
+
+@font-face /* 17 */ {
+  font-family: MJXTEX-SSI;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_SansSerif-Italic.woff") format("woff");
+}
+
+@font-face /* 18 */ {
+  font-family: MJXTEX-SC;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Script-Regular.woff") format("woff");
+}
+
+@font-face /* 19 */ {
+  font-family: MJXTEX-T;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Typewriter-Regular.woff") format("woff");
+}
+
+@font-face /* 20 */ {
+  font-family: MJXTEX-V;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Regular.woff") format("woff");
+}
+
+@font-face /* 21 */ {
+  font-family: MJXTEX-VB;
+  src: url("https://cdn.jsdelivr.net/npm/mathjax@3/es5/output/chtml/fonts/woff-v2/MathJax_Vector-Bold.woff") format("woff");
+}
+</style><link rel="preload" href="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/f_002.txt" as="script" nonce="6eeff0da-a0d2-49f8-a1ae-70b8f09b49f6"><script type="text/javascript" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/f_002.txt" nonce="6eeff0da-a0d2-49f8-a1ae-70b8f09b49f6"></script></head>
+<body>
+
+
+    <!-- PC -->
+
+    
+        <!-- 위키독스 포인트 광고 -->
+        <!-- 오른쪽 플로팅 고정광고 시작-->
+        <aside id="asideRight" class="asideRight">
+            <div id="chaseRight" style="top:20px;">
+                <script async="" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/f_005.txt" crossorigin="anonymous" type="text/javascript" data-checked-head="true"></script>
+                <!-- wikidocs_sidebar -->
+                <ins class="adsbygoogle" style="display: inline-block; width: 200px; height: 0px;" data-ad-client="ca-pub-9470517771012578" data-ad-channel="6628864207" data-adsbygoogle-status="done" data-ad-status="unfilled"><div id="aswift_1_host" style="border: medium none; height: 0px; width: 200px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block; overflow: hidden; opacity: 0;" tabindex="0" title="Advertisement" aria-label="Advertisement"><iframe id="aswift_1" name="aswift_1" style="left: 0px; position: absolute; top: 0px; border: 0px none; width: 200px; height: 0px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/ads.html" data-google-container-id="a!2" data-google-query-id="CK_bmouY4_8CFZILXAodwtAIqQ" data-load-complete="true" width="200" height="0" frameborder="0"></iframe></div></ins>
+                <script type="text/javascript">
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                </script>
+            </div>
+        </aside>
+        <!-- 오른쪽 플로팅 고정광고 끝 -->
+    
+
+
+
+
+
+
+
+
+<div class="container" style="padding-bottom:50px;">
+
+<div class="content row tex2jax_ignore" style="margin-top:0px;">
+    <div class="col-sm-3">
+        
+<div class="row">
+    <div class="col-sm-3 sidebar" style="padding: 0px; margin: 0px; overflow: hidden auto;">
+        
+
+        <div class="toc toc-checker" style="display: block;">
+
+            <!--
+            <div style="padding:15px 10px 15px 15px;background:#f9f9f9;border-bottom:solid 1px #ccc;">
+                <a class="pull-right menu_link menu-toggle" style="cursor:pointer;margin-right:5px;"><span class="glyphicon glyphicon-menu-hamburger" title="메뉴"></span></a>
+                <span class="">
+                    <a href="/" class="menu_link" style="font-family:consolas;">WikiDocs</a>
+                </span>
+            </div>
+            -->
+
+            <div class="row">
+
+                <div class="col-xs-12" style="margin:;padding:0;">
+
+                    <div class="row" style="margin:0;padding:0;border-bottom:solid 1px #ccc;">
+                        <div class="col-xs-10">
+                            <input type="text" id="kw" name="kw" class="input-search" placeholder="검색어를 입력하세요.">
+                        </div>
+                        <div class="col-xs-2 clearfix">
+                            
+                            <div class="menu_link menu-toggle pull-right" style="cursor:pointer;padding-top:14px;padding-right:10px;"><span class="glyphicon glyphicon-menu-hamburger" title="메뉴"></span></div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="list-group list-group-toc" style="margin:0;">
+
+                <a class="list-group-item " href="https://wikidocs.net/book/8056" style="margin:0;">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="🤗Transformers (신경망 언어모델 라이브러리) 강좌">
+                        
+                            <i class="glyphicon glyphicon-book"></i>
+                        
+                        <strong>🤗Transformers (신경망 언어모델 라이브러리) 강좌</strong>
+                    </span>
+                </a>
+
+                
+                <a href="javascript:page(166691)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="0장. 환경설정 (SETUP)">
+                        <span style="padding-left:0px">
+                        
+                        0장. 환경설정 (SETUP)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166785)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="1장. 트랜스포머 (Transformer) 모델">
+                        <span style="padding-left:0px">
+                        
+                        1장. 트랜스포머 (Transformer) 모델
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166786)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="1. 자연어처리 (Natural Language Processing)">
+                        <span style="padding-left:20px">
+                        
+                        1. 자연어처리 (Natural Language Processing)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166787)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="2. 🤗Transformers가 할 수 있는 일들">
+                        <span style="padding-left:20px">
+                        
+                        2. 🤗Transformers가 할 수 있는 일들
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166788)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="3. 🤗Transformers는 어떻게 동작하는가?">
+                        <span style="padding-left:20px">
+                        
+                        3. 🤗Transformers는 어떻게 동작하는가?
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166789)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="4. 인코더 모델 (Encoder Models)">
+                        <span style="padding-left:20px">
+                        
+                        4. 인코더 모델 (Encoder Models)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166790)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="5. 디코더 모델 (Decoder Models)">
+                        <span style="padding-left:20px">
+                        
+                        5. 디코더 모델 (Decoder Models)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166791)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="6. 인코더-디코더 모델 (Sequence-to-sequence models)">
+                        <span style="padding-left:20px">
+                        
+                        6. 인코더-디코더 모델 (Sequence-to-sequence models)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166792)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="7. 편견과 한계 (Bias and Limitations)">
+                        <span style="padding-left:20px">
+                        
+                        7. 편견과 한계 (Bias and Limitations)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166793)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="8. 1장 요약 (Summary)">
+                        <span style="padding-left:20px">
+                        
+                        8. 1장 요약 (Summary)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166794)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="2장. 🤗Transformers 라이브러리 사용하기">
+                        <span style="padding-left:0px">
+                        
+                        2장. 🤗Transformers 라이브러리 사용하기
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166795)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="1. Pipeline 내부 실행 과정">
+                        <span style="padding-left:20px">
+                        
+                        1. Pipeline 내부 실행 과정
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166799)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="2. 모델 (Models)">
+                        <span style="padding-left:20px">
+                        
+                        2. 모델 (Models)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166796)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="3. 토크나이저 (Tokenizer)">
+                        <span style="padding-left:20px">
+                        
+                        3. 토크나이저 (Tokenizer)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166797)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="4. 다중 시퀀스 처리">
+                        <span style="padding-left:20px">
+                        
+                        4. 다중 시퀀스 처리
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166798)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="5. 2장 요약 (Summary)">
+                        <span style="padding-left:20px">
+                        
+                        5. 2장 요약 (Summary)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166800)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="3장. 사전학습 모델에 대한 미세조정">
+                        <span style="padding-left:0px">
+                        
+                        3장. 사전학습 모델에 대한 미세조정
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166801)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="1. 데이터 처리 작업">
+                        <span style="padding-left:20px">
+                        
+                        1. 데이터 처리 작업
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166802)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="2. Trainer API를 이용한 모델 미세 조정(fine-tuning)">
+                        <span style="padding-left:20px">
+                        
+                        2. Trainer API를 이용한 모델 미세 조정(fine-tuning)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166803)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="3. 전체 학습 (Full Training)">
+                        <span style="padding-left:20px">
+                        
+                        3. 전체 학습 (Full Training)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166804)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="4. 3장 요약 (Summary)">
+                        <span style="padding-left:20px">
+                        
+                        4. 3장 요약 (Summary)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166805)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="4장. 모델 및 토크나이저 공유">
+                        <span style="padding-left:0px">
+                        
+                        4장. 모델 및 토크나이저 공유
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166806)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="5장.  🤗Datasets 라이브러리">
+                        <span style="padding-left:0px">
+                        
+                        5장.  🤗Datasets 라이브러리
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166816)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="1. 만일 자신의 데이터셋이 허브에 없다면?">
+                        <span style="padding-left:20px">
+                        
+                        1. 만일 자신의 데이터셋이 허브에 없다면?
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166817)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="2. 데이터셋 슬라이싱(slicing)과 다이싱(dicing)">
+                        <span style="padding-left:20px">
+                        
+                        2. 데이터셋 슬라이싱(slicing)과 다이싱(dicing)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166815)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="3. 🤗Datasets가 빅데이터 문제를 해결한다!">
+                        <span style="padding-left:20px">
+                        
+                        3. 🤗Datasets가 빅데이터 문제를 해결한다!
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166818)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="4. 자신만의 데이터셋 만들기">
+                        <span style="padding-left:20px">
+                        
+                        4. 자신만의 데이터셋 만들기
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166819)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="5. FAISS를 이용한 시맨틱 검색">
+                        <span style="padding-left:20px">
+                        
+                        5. FAISS를 이용한 시맨틱 검색
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166820)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="6. 5장 요약 (Summary)">
+                        <span style="padding-left:20px">
+                        
+                        6. 5장 요약 (Summary)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166814)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="6장. 🤗Tokenizers 라이브러리">
+                        <span style="padding-left:0px">
+                        
+                        6장. 🤗Tokenizers 라이브러리
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166821)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="1. 기존 토크나이저에서 새로운 토크나이저 학습">
+                        <span style="padding-left:20px">
+                        
+                        1. 기존 토크나이저에서 새로운 토크나이저 학습
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166822)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="2. &quot;빠른(fast)&quot; 토크나이저의 특별한 능력">
+                        <span style="padding-left:20px">
+                        
+                        2. "빠른(fast)" 토크나이저의 특별한 능력
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166823)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="3. QA 파이프라인에서의 &quot;빠른(fast)&quot; 토크나이저">
+                        <span style="padding-left:20px">
+                        
+                        3. QA 파이프라인에서의 "빠른(fast)" 토크나이저
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166824)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="4. 정규화(Normalization) 및 사전 토큰화(Pre-tokenization)">
+                        <span style="padding-left:20px">
+                        
+                        4. 정규화(Normalization) 및 사전 토큰화(Pre-tokenization)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166825)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="5. Byte-Pair Encoding (BPE) 토큰화">
+                        <span style="padding-left:20px">
+                        
+                        5. Byte-Pair Encoding (BPE) 토큰화
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166826)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="6. WordPiece 토큰화">
+                        <span style="padding-left:20px">
+                        
+                        6. WordPiece 토큰화
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166827)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="7. Unigram 토큰화">
+                        <span style="padding-left:20px">
+                        
+                        7. Unigram 토큰화
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166828)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="8. 블록 단위로 토크나이저 빌딩하기">
+                        <span style="padding-left:20px">
+                        
+                        8. 블록 단위로 토크나이저 빌딩하기
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166829)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="7장. 주요 NLP 태스크 실제 구현방법">
+                        <span style="padding-left:0px">
+                        
+                        7장. 주요 NLP 태스크 실제 구현방법
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166830)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="1. 토큰 분류 (Token Classification)">
+                        <span style="padding-left:20px">
+                        
+                        1. 토큰 분류 (Token Classification)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166833)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="2. 마스크 언어 모델(Masked Language Model) 미세조정">
+                        <span style="padding-left:20px">
+                        
+                        2. 마스크 언어 모델(Masked Language Model) 미세조정
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166832)" class="list-group-item active">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="3. 번역 (Translation)">
+                        <span style="padding-left:20px">
+                        
+                        3. 번역 (Translation)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166831)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="4. 요약 (Summarization)">
+                        <span style="padding-left:20px">
+                        
+                        4. 요약 (Summarization)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166834)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="5. 인과적 언어 모델(Causal Language Model)을 처음부터 학습하기">
+                        <span style="padding-left:20px">
+                        
+                        5. 인과적 언어 모델(Causal Language Model)을 처음부터 학습하기
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166845)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="6. 질의 응답 (Question Answering)">
+                        <span style="padding-left:20px">
+                        
+                        6. 질의 응답 (Question Answering)
+                        </span>
+                    </span>
+                </a>
+                
+                <a href="javascript:page(166847)" class="list-group-item ">
+                    <span style="white-space:nowrap;overflow:hidden;display:block;" title="8장. 도움 요청 방법 (How to ask for help)">
+                        <span style="padding-left:0px">
+                        
+                        8장. 도움 요청 방법 (How to ask for help)
+                        </span>
+                    </span>
+                </a>
+                
+            </div>
+        </div>
+
+        
+        <div class="row">
+            <div class="small" style="border-top:solid 1px #ccc;padding:15px 15px 30px 15px;font-family:consolas;">
+                <a href="https://wikidocs.net/" style="padding-left:15px;color:#333;">Published with WikiDocs</a>
+            </div>
+        </div>
+        
+
+        <input type="hidden" name="request_mobile" id="request_mobile" value="0">
+
+        <form id="search_form" action="/book/search/8056" method="post">
+            <input type="hidden" name="keyword" id="keyword">
+        </form>
+
+    </div>
+
+</div>
+
+<script type="text/javascript">
+function myTrim(x) {
+    return x.replace(/^\s+|\s+$/gm,'');
+}
+
+function search_json() {
+    var kw = myTrim($("#kw").val());
+    if(!kw) {
+        return;
+    }
+
+    $.post("/book/search.json", {
+        "keyword": kw
+
+    }, function (json) {
+        if (json.success) {
+            location.href = "/book/search/result/8056";
+        }
+
+    }, "json");
+}
+
+$(document).ready(function () {
+    $(".book-search").on("click", function() {
+        $("#search_form").submit();
+    });
+
+    $("#mobile_search_btn").on("click", function() {
+        search_json();
+    });
+
+    $('#kw').keyup(function(e) {
+        if (e.keyCode == 13) {
+            search_json();
+        }
+    });
+
+    $(".home").on("click", function() {
+        location.href = "/";
+    });
+
+    if (typeof(Storage) !== "undefined") {
+        if(localStorage.sidebar == "hidden") {
+            menuToggle();
+        }else {
+            $(".sidebar").show();
+            $(".toc-header").show();
+        }
+    }else {
+        $(".sidebar").show();
+        $(".toc-header").show();
+    }
+
+    $(".toc").css("display", "block");
+    if (typeof(Storage) !== "undefined") {
+        $(".sidebar").scrollTop(localStorage.sp);
+    }
+
+    $(".sidebar").css("overflow-y", "auto");
+
+    $(".toc_item").on("click", function() {
+        var page_id = $(this).attr("page_id");
+        // $(".selected_toc").removeClass("selected_toc");
+        // $(this).addClass("selected_toc");
+        page(page_id);
+
+    });
+
+    $(".menu-toggle").on("click", function() {
+        menuToggle();
+
+        if (typeof(Storage) !== "undefined") {
+            if(localStorage.sidebar == "hidden") {
+                localStorage.sidebar = "show";
+            }else {
+                localStorage.sidebar = "hidden";
+            }
+        }
+    });
+
+    
+
+    $("#load_content").show();
+});
+
+
+function menuToggle(no_sidebar) {
+    if(!no_sidebar) {
+        $(".sidebar").toggle();
+        $(".toc-header").toggle();
+    }
+    $("#load_content").toggleClass("col-sm-offset-3");
+    $("#load_content").toggleClass("col-sm-9");
+    $("#load_content").toggleClass("col-sm-12");
+    $("#load_content").toggleClass("sidebar-padding");
+    $(".prev_next_indicator").toggle();
+    $(".menu-group").toggle();
+}
+
+function page(no) {
+    var scrollpos = $(".sidebar").scrollTop();
+    if (typeof(Storage) !== "undefined") {
+        localStorage.sp = scrollpos;
+    }
+
+    location.href = "/"+no;
+    return false;
+
+    $(".selected_toc").removeClass("selected_toc");
+    $(".toc_item").each(function() {
+        var page_id = $(this).attr("page_id");
+        if(page_id == no) {
+            $(this).addClass("selected_toc");
+        }
+    });
+
+    var url = "/load/"+no;
+    $("#load_content").load(url, function(responseTxt, statusTxt, xhr){
+        if(statusTxt == "success") {
+            // alert("External content loaded successfully!");
+            $("#load_content").scrollTop(0);
+            window.history.pushState("object or string", "3. 번역 (Translation)", "/"+no);
+        }
+        if(statusTxt == "error") {
+            alert("Error: " + xhr.status + ": " + xhr.statusText);
+        }
+    });
+
+}
+</script>
+
+
+
+    </div>
+
+    
+    <div class="page col-sm-offset-3 col-sm-9" id="load_content" style="margin-top: 0px;">
+        <!-- <div style="margin: 50px 0; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
+    <div style="font-size: 24px; font-weight: bold; margin-bottom: 20px;">[중요] 서버 점검 공지</div>
+    <div style="font-size: 16px; line-height: 1.6;">
+        <p>안녕하세요, 고객 여러분,</p>
+        <p>저희는 시스템의 안정성을 향상시키기 위해 예정된 서버 점검을 진행하게 되었습니다. 이로 인해 일시적으로 서비스 이용에 불편을 드릴 수 있음을 알려드립니다.</p>
+        <p><strong>- 점검 일시: 2023년 6월 17일 (토요일), 23시부터 24시까지 (1시간 동안)</strong></p>
+        <p>점검 동안에는 모든 서비스가 일시적으로 중단됩니다. 점검이 완료된 후에는 정상적으로 서비스를 이용하실 수 있습니다.</p>
+        <p>점검 시간 동안에는 서비스 이용이 불가능하오니, 이 점 참고하시어 불편함이 없으시길 바랍니다.</p>
+        <p>저희는 고객 여러분께 더 나은 서비스를 제공하기 위해 노력하고 있습니다. 이해와 협조에 감사드립니다.</p>
+        <p>감사합니다.</p>
+    </div>
+</div>
+ -->
+        
+
+
+
+
+
+
+
+
+<div class="btn-group pull-right menu-group" role="group">
+    <small>
+        <a class="menu_link menu-toggle"><span class="glyphicon glyphicon-menu-hamburger" title="메뉴"></span></a>
+    </small>
+</div>
+<div class="menu-wikidocs">
+</div>
+
+
+<div class="clearfix page-depth">
+    <ol class="breadcrumb pull-left">
+        <li><small><a href="https://wikidocs.net/book/8056"><i class="glyphicon glyphicon-book"></i> <strong>🤗Transformers (신경망 언어모델 …</strong></a></small></li>
+        
+        <li><small><a href="https://wikidocs.net/166829">7장. 주요 NLP 태스크 실제 구현방법</a></small></li>
+        
+        <li><small><a href="https://wikidocs.net/166832">3. 번역 (Translation)</a></small></li>
+        
+    </ol>
+    
+    <ol class="breadcrumb pull-right">
+        <li><a href="https://wikidocs.net/"><small class=""><i class="glyphicon glyphicon-home"></i> WikiDocs</small></a></li>
+    </ol>
+    
+</div>
+
+
+<h1 class="page-subject">
+    3. 번역 (Translation)
+    
+        
+    
+</h1>
+
+<div class="page-content tex2jax_process">
+    <p>이제 번역(translation)에 대해서 알아봅시다. 이것은 또 다른 형태의 <a href="https://huggingface.co/course/chapter1/7">sequence-to-sequence 태스크</a>입니다. 즉, 한 시퀀스에서 다른 시퀀스로 이동하는(변형하는) 것으로 공식화할 수 있는 문제입니다. 그런 의미에서 이 문제는 <a href="https://huggingface.co/course/chapter7/6">요약(summarization)</a>과 매우 유사하고 여기에서 보게 될 내용을 다음과 같은 다른 sequence-to-sequence 문제에 적용할 수 있습니다:</p>
+<ul>
+<li>
+<p><strong>스타일 트랜스퍼(style transfer)</strong>: 특정 스타일로 작성된 텍스트를 다른 스타일로 번역하는 모델 생성(예: 격식 스타일에서 캐주얼 스타일로 또는 셰익스피어 영어에서 현대 영어로)</p>
+</li>
+<li>
+<p><strong>생성 기반 질의 응답(generative question answering)</strong>: 주어진 맥락(context)에서 질문에 대한 답변을 생성하는 모델 만들기</p>
+</li>
+</ul>
+<p>두 개(또는 그 이상) 언어로 된 충분히 큰 텍스트 코퍼스가 있는 경우 <a href="https://huggingface.co/course/chapter7/6">인과적 언어 모델링(causal language modeling)</a>
+ 섹션에서 하는 것처럼 처음부터 새로운 번역 모델을 학습할 수 있습니다. 그러나 일정 규모의 특정 언어로 표현된 말뭉치를 가지고 
+mT5나 mBART 등과 같은 이미 존재하는 다국어 번역 모델을 미세 조정하는 편이 훨씬 빠를 겁니다. </p>
+<p>이 섹션에서는 <a href="https://apps.kde.org/">KDE 앱</a>용으로 현지화된 파일 데이터셋인 <a href="https://huggingface.co/datasets/kde4">KDE4 데이터셋</a>을 이용하여 영어에서 프랑스어로 번역하도록 사전 학습된 Marian 모델을 미세 조정할 것입니다. 우리가 사용할 모델은 실제로 KDE4 데이터셋이 포함된 <a href="https://opus.nlpl.eu/">Opus 데이터셋</a>에
+서 가져온 대규모 프랑스어 및 영어 텍스트 코퍼스에서 사전 학습되었습니다. 그러나 우리가 사용하는 사전 학습된 모델이 학습 
+과정에서 해당 데이터셋을 이미 학습했다고 하더라도 미세 조정 후에 더 나은 버전을 얻을 수 있음을 알 수 있습니다.</p>
+<p>완료되면 다음과 같은 예측을 할 수 있는 모델을 도출할 수 있습니다:</p>
+<p><img alt="" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/157666467-8da72da4-2039-4930-ac3b-5c2f4190b26c.png"></p>
+<p>이전 섹션에서와 같이 아래 코드를 사용하여 학습하고 Hub에 업로드할 실제 모델을 찾고 <a href="https://huggingface.co/huggingface-course/marian-finetuned-kde4-en-to-fr?text=This+plugin+allows+you+to+automatically+translate+web+pages+between+several+languages.">여기</a>에서 예측 결과를 다시 확인할 수 있습니다.</p>
+<h2 id="_1">데이터 준비</h2>
+<p>번역 모델을 미세 조정하거나 처음부터 사전 학습하려면 작업에 적합한 데이터셋이 필요합니다. 이전에 언급했듯이 이 섹션에서는 <a href="https://huggingface.co/datasets/kde4">KDE4 데이터셋</a>을 사용하지만 번역하려는 두 언어의 문장 쌍이 있는 한 자체 데이터를 사용하도록 코드를 매우 쉽게 조정할 수 있습니다. <code>Dataset</code>을 이용하여 사용자 정의 데이터를 로드하는 방법에 대한 복습이 필요한 경우 5장을 다시 살펴보세요.</p>
+<h3 id="kde4">KDE4 데이터셋</h3>
+<p>이전과 같이 <code>load_dataset()</code> 함수를 사용하여 데이터셋을 다운로드합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_dataset, load_metric
+
+raw_datasets = load_dataset(<span class="hljs-string">"kde4"</span>, lang1=<span class="hljs-string">"en"</span>, lang2=<span class="hljs-string">"fr"</span>)
+</code></pre>
+<p>다른 언어 쌍으로 작업하려는 경우 원하는 언어 코드를 지정하여 해당 데이터셋을 다운로드할 수 있습니다. 이 데이터셋에서는 총 92개 언어를 사용할 수 있습니다. <a href="https://huggingface.co/datasets/kde4">데이터셋 카드</a>의 언어 태그를 확장하면 모두 볼 수 있습니다.</p>
+<p><img alt="" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/language_tags.png"></p>
+<p>다운로드한 데이터셋을 한번 살펴보겠습니다.</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>raw_datasets
+</code></pre>
+<p>총 210,173건의 문장 쌍을 포함하고 있지만 단일 분할이므로 여기서 검증 집합을 별도로 생성해야 합니다. 5장에서 보았듯이 <code>Dataset</code>에는 이 작업을 쉽게 수행할 수 있는 <code>train_test_split()</code> 메서드가 있습니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>split_datasets = raw_datasets[<span class="hljs-string">"train"</span>].train_test_split(train_size=<span class="hljs-number">0.9</span>, seed=<span class="hljs-number">20</span>)
+split_datasets
+</code></pre>
+<p>다음과 같이 "test" 키의 이름을 "validation"으로 바꿀 수 있습니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>split_datasets[<span class="hljs-string">"validation"</span>] = split_datasets.pop(<span class="hljs-string">"test"</span>)
+</code></pre>
+<p>이제 데이터셋의 한 요소를 살펴보겠습니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>split_datasets[<span class="hljs-string">"train"</span>][<span class="hljs-number">1</span>][<span class="hljs-string">"translation"</span>]
+</code></pre>
+<p>위와 같이 우리가 요구한 언어쌍(영어, 불어)에 해당하는 문장들이 포함된 딕셔너리가 반환됩니다. 기술적인 컴퓨터 과학 용어로
+ 가득 찬 이 데이터셋의 한 가지 특징은 모두 프랑스어로 완전히 번역되었다는 것입니다. 그러나 프랑스 엔지니어들은 종종 게을러서 
+말할 때 대부분의 컴퓨터 과학 관련 단어를 영어로 표현하고 있습니다. 예를 들어, 위 예시에서 "threads"라는 단어는 불어 
+문장, 특히 기술적인 대화에서 많이 나타납니다. 그러나 이 데이터 세트에서는 더 "회의를 위한 토론(fils de 
+discussion)"으로 정확하게 번역되었습니다. 규모가 더 큰 프랑스어 및 영어 문장 말뭉치에서 사전 학습된 아래와 같은 
+모델은 단어를 번역하지 않고 있는 그대로 그냥 두는 더 쉬운 옵션을 사용합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> pipeline
+
+model_checkpoint = <span class="hljs-string">"Helsinki-NLP/opus-mt-en-fr"</span>
+translator = pipeline(<span class="hljs-string">"translation"</span>, model=model_checkpoint)
+translator(<span class="hljs-string">"Default to expanded threads"</span>)
+</code></pre>
+<p>또 다른 예는 "plugin"이라는 단어에서 볼 수 있습니다. 이 단어는 공식적으로 프랑스어가 아니지만 대부분의 원어민이 
+이해하고 번역하는데 어렵지 않을 것입니다. KDE4 데이터셋에서 이 단어는 프랑스어로 더 공식적인 "module 
+d'extension"으로 번역되었습니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>split_datasets[<span class="hljs-string">"train"</span>][<span class="hljs-number">172</span>][<span class="hljs-string">"translation"</span>]
+</code></pre>
+<p>그러나 위의 사전 학습된 모델은 간결하고 친숙한 영어 단어를 고수합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>translator(
+    <span class="hljs-string">"Unable to import %1 using the OFX importer plugin. This file is not the correct format."</span>
+)
+</code></pre>
+<p>미세 조정된 모델이 데이터셋의 이러한 특성을 흡수하는지 확인하는 것은 흥미로울 것입니다.</p>
+<blockquote>
+<p>✏️ <strong>Your turn!</strong> 프랑스어에서 자주 사용되는 또 다른 영어 단어는 "email"입니다. 이 단어를 사용하는 학습 데이터셋에서 첫 번째 샘플을 찾아봅시다. 어떻게 번역됩니까? 사전 학습된 모델은 동일한 영어 문장을 어떻게 번역합니까?</p>
+</blockquote>
+<h3 id="_2">데이터 처리</h3>
+<p>지금쯤이면 기본적인 절차를 알아야 합니다. 모든 텍스트는 모델이 이해할 수 있도록 토큰 ID 세트로 변환되어야 합니다. 이 작업을 위해 입력과 타겟을 모두 토큰화해야 합니다. 첫 번째 작업은 <code>tokenizer</code> 객체를 만드는 것입니다. 앞서 언급했듯이 Marian English to French 사전 학습 모델을 사용할 것입니다. 다른 언어 쌍에 대해서 작업하려면 모델 체크포인트를 변경해야 합니다. <a href="https://huggingface.co/Helsinki-NLP">Helsinki-NLP</a> 조직은 여러 언어로 천 개 이상의 모델을 제공합니다.</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoTokenizer
+
+model_checkpoint = <span class="hljs-string">"Helsinki-NLP/opus-mt-en-fr"</span>
+tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, return_tensors=<span class="hljs-string">"pt"</span>)
+</code></pre>
+<p><a href="https://huggingface.co/models">Hub</a>에서 선호하는 다른 모델로 <code>model_checkpoint</code>를 바꾸거나 사전 학습된 모델과 토크나이저를 저장한 로컬 폴더로 바꿀 수도 있습니다.</p>
+<blockquote>
+<p>💡 mBART, mBART-50 또는 M2M100과 같은 다국어 토크나이저를 사용하는 경우 <code>tokenizer.src_lang</code> 및 <code>tokenizer.tgt_lang</code>을 올바른 값으로 설정하여 토크나이저에서 입력 및 대상의 언어 코드를 설정해야 합니다.</p>
+</blockquote>
+<p>데이터 준비 과정은 매우 직관적입니다. 기억해야 할 것이 하나 있습니다. 평소와 같이 입력을 처리하지만 타겟(target)의 경우 컨텍스트 관리자 내부의 토크나이저를 <code>as_target_tokenizer()</code>로 래핑해야 합니다.</p>
+<p>Python의 컨텍스트 관리자는 <code>with</code> 문과 함께 도입되었으며 두 개의 관련 작업을 쌍으로 실행할 때 유용합니다. 이에 대한 가장 일반적인 예는 파일을 쓰거나 읽을 때이며, 이는 종종 다음과 같은 명령어 내에서 수행됩니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-comment"># with open(file_path) as f:</span>
+<span class="hljs-comment">#     content = f.read()</span>
+</code></pre>
+<p>여기서 쌍으로 실행되는 두 가지 관련 작업은 파일을 열고 닫는 작업입니다. 열린 파일 <code>f</code>에 해당하는 객체는 <code>with</code> 아래의 들여쓰기된 블록 내부에만 존재합니다. 열기는 해당 블록보다 먼저 발생하고 블록 끝에서 닫기가 발생합니다.</p>
+<p>따라서 하나의 샘플을 전처리하는 과정은 다음과 같습니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>en_sentence = split_datasets[<span class="hljs-string">"train"</span>][<span class="hljs-number">1</span>][<span class="hljs-string">"translation"</span>][<span class="hljs-string">"en"</span>]
+fr_sentence = split_datasets[<span class="hljs-string">"train"</span>][<span class="hljs-number">1</span>][<span class="hljs-string">"translation"</span>][<span class="hljs-string">"fr"</span>]
+
+inputs = tokenizer(en_sentence)
+<span class="hljs-keyword">with</span> tokenizer.as_target_tokenizer():
+    targets = tokenizer(fr_sentence)
+</code></pre>
+<p>컨텍스트 관리자 내에서 대상을 토큰화하는 것을 잊어버리면 입력 토크나이저에 의해 타겟(target)이 토큰화됩니다. 이럴 경우 Marian 모델의 경우에는 토크나이징이 제대로 동작하지 않을 겁니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>wrong_targets = tokenizer(fr_sentence)
+<span class="hljs-built_in">print</span>(tokenizer.convert_ids_to_tokens(wrong_targets[<span class="hljs-string">"input_ids"</span>]))
+<span class="hljs-built_in">print</span>(tokenizer.convert_ids_to_tokens(targets[<span class="hljs-string">"input_ids"</span>]))
+</code></pre>
+<p>우리가 볼 수 있듯이, 영어 토크나이저를 사용하여 프랑스어 문장을 전처리하면 토크나이저는 프랑스어 단어를 모르기 때문에 훨씬 더 많은 토큰이 생성됩니다.</p>
+<p><code>inputs</code>과 <code>targets</code>은 모두 일반적인 키(input IDs, attention mask 등)가 있는 딕셔너리이므로 마지막 단계는 입력 내부에 "<code>labels</code>" 키를 설정하는 것입니다. 이 작업은 데이터셋에 적용할 전처리 함수에서 수행합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>max_input_length = <span class="hljs-number">128</span>
+max_target_length = <span class="hljs-number">128</span>
+
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">preprocess_function</span>(<span class="hljs-params">examples</span>):
+    inputs = [ex[<span class="hljs-string">"en"</span>] <span class="hljs-keyword">for</span> ex <span class="hljs-keyword">in</span> examples[<span class="hljs-string">"translation"</span>]]
+    targets = [ex[<span class="hljs-string">"fr"</span>] <span class="hljs-keyword">for</span> ex <span class="hljs-keyword">in</span> examples[<span class="hljs-string">"translation"</span>]]
+    model_inputs = tokenizer(inputs, max_length=max_input_length, truncation=<span class="hljs-literal">True</span>)
+
+    <span class="hljs-comment"># 타겟을 위한 토크나이저 셋업</span>
+    <span class="hljs-keyword">with</span> tokenizer.as_target_tokenizer():
+        labels = tokenizer(targets, max_length=max_target_length, truncation=<span class="hljs-literal">True</span>)
+
+    model_inputs[<span class="hljs-string">"labels"</span>] = labels[<span class="hljs-string">"input_ids"</span>]
+    <span class="hljs-keyword">return</span> model_inputs
+</code></pre>
+<p>입력 및 출력에 대해 동일한 최대 길이를 설정했습니다. 우리가 다루고 있는 텍스트는 매우 짧기 때문에 128을 사용합니다.</p>
+<blockquote>
+<p>💡 T5 모델(더 구체적으로 t5-xxx 체크포인트 중 하나)을 사용하는 경우, 모델은 텍스트 입력에 <code>translate: English to French:</code>와 같이 당면한 작업을 나타내는 접두사가 있을 것으로 예상합니다.</p>
+<p>⚠️ 타겟의 어텐션 마스크는 모델이 예상하지 못하기 때문에 주의를 기울이지 않습니다. 대신 패딩 토큰에 해당하는 레이블을 
+-100으로 설정해야 손실 계산에서 무시됩니다. 이 작업은 동적 패딩을 적용하기 때문에 나중에 데이터 콜레이터에 의해 수행되지만 
+여기에서 패딩을 사용하는 경우 패딩 토큰에 해당하는 모든 레이블을 -100으로 설정하도록 전처리 기능을 조정해야 합니다.</p>
+</blockquote>
+<p>이제 데이터셋의 모든 분할에 대해 전처리를 한 번에 적용할 수 있습니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>tokenized_datasets = split_datasets.<span class="hljs-built_in">map</span>(
+    preprocess_function,
+    batched=<span class="hljs-literal">True</span>,
+    remove_columns=split_datasets[<span class="hljs-string">"train"</span>].column_names,
+)
+</code></pre>
+<p>이제 데이터가 전처리되었으므로 사전 학습된 모델을 미세 조정할 준비가 되었습니다!</p>
+<h2 id="trainer-api"><code>Trainer</code> API로 모델 미세 조정하기</h2>
+<p><code>Trainer</code>를 사용하는 실제 코드는 약간만 변경하면 이전과 동일합니다. 여기에서는 <code>Seq2SeqTrainer</code>를 사용합니다. <code>Seq2SeqTrainer</code>는 <code>Trainer</code>의 하위 클래스로서 입력에 대한 출력을 예측하기 위해 <code>generate()</code> 메서드를 사용하여 평가를 적절하게 수행할 수 있습니다. 평가에 대한 내용은 메트릭(metric) 계산에 대해 이야기할 때 더 자세히 살펴보겠습니다.</p>
+<p>먼저 미세 조정할 실제 모델이 필요합니다. 일반적인 <code>AutoModel</code> API를 사용합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AutoModelForSeq2SeqLM
+
+model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)
+</code></pre>
+<p>모델 체크포인트가 번역 작업에 대해서 사전 학습된 모델을 나타내고 이를 그대로 사용하고 있으므로 누락된 가중치 또는 새로 초기화된 가중치에 대한 경고가 없습니다.</p>
+<h3 id="data-collation">데이터 콜레이션 (Data Collation)</h3>
+<p>동적 배치 처리(Dynamic batching)를 위한 패딩을 처리하려면 데이터 콜레이터가 필요합니다. 이 경우 3장에서와 같이 <code>DataCollatorWithPadding</code>을
+ 사용할 수 없습니다. 왜냐하면 이 메서드는 입력(input IDs, attention mask 및 token type IDs)에
+ 대해서만 패딩을 수행하기 때문입니다. 레이블 역시 레이블에 있는 최대 길이로 채워져야 합니다. 그리고 앞서 언급했듯이 레이블을 
+채우는데 사용되는 패딩 값은 토크나이저의 패딩 토큰이 아니라 -100이어야 합니다. 그래야 패딩된 값이 손실 계산에서 무시됩니다.</p>
+<p>이 작업은 모두 <code>DataCollatorForSeq2Seq</code>에 의해 수행됩니다. <code>DataCollatorWithPadding</code>과 마찬가지로, <code>DataCollatorForSeq2Seq</code>는 입력을 전처리하는데 사용되는 <code>tokenizer</code>는
+ 물론 모델 자체도 매개변수로 입력받습니다. 모델도 입력받는 이유는 이 데이터 콜레이터가 시작 부분에 특수 토큰이 붙어 있는, 
+레이블 시퀀스를 우측으로 시프트(shift)한 버전인 디코더 input IDs를 준비하는 역할도 하기 때문입니다. 이 
+시프트(shift) 방법은 아키텍처마다 약간씩 다르기 때문에 <code>DataCollatorForSeq2Seq</code>는 모델 객체를 알아야 합니다.</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> DataCollatorForSeq2Seq
+
+data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
+</code></pre>
+<p>몇 개의 샘플에서 이를 테스트하기 위해 이 콜레이터에 토큰화된 학습 집합의 예제 목록을 입력해봅시다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>batch = data_collator([tokenized_datasets[<span class="hljs-string">"train"</span>][i] <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-number">3</span>)])
+batch.keys()
+</code></pre>
+<p>-100을 사용하여 레이블이 배치의 최대 길이로 채워졌는지 확인할 수 있습니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>batch[<span class="hljs-string">"labels"</span>]
+</code></pre>
+<p>또한 <code>decoder_input_ids</code>를 살펴보고 <code>labels</code>에 저장된 토큰 리스트의 시프트(shift) 버전인지 확인할 수 있습니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>batch[<span class="hljs-string">"decoder_input_ids"</span>]
+</code></pre>
+<p>다음은 데이터셋의 첫 번째 및 두 번째 요소에 대한 레이블입니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-number">3</span>):
+    <span class="hljs-built_in">print</span>(tokenized_datasets[<span class="hljs-string">"train"</span>][i][<span class="hljs-string">"labels"</span>])
+</code></pre>
+<p>이 <code>data_collator</code>를 <code>Seq2SeqTrainer</code>에 전달할 것입니다. 다음으로 평가 지표(metric)를 살펴보겠습니다.</p>
+<h3 id="metrics">평가지표 (Metrics)</h3>
+<p><code>Seq2SeqTrainer</code>가 수퍼클래스 <code>Trainer</code>에 추가하는 기능은 평가(evaluation) 또는 예측(prediction) 중에 <code>generate()</code> 메서드를 사용하는 기능입니다. 학습하는 동안 모델은 학습 속도를 높이기 위해, 예측하려는 토큰 이후에 존재하는 토큰을 사용하지 않도록 하려고 어텐션 마스킹과 함깨 <code>decoder_input_ids</code>를 사용합니다. 추론하는 동안에는 레이블이 없기 때문에 이를 사용할 수 없으므로 동일한 설정으로 모델을 평가하는 것이 좋습니다.</p>
+<p>1장에서 보았듯이 디코더는 토큰을 하나씩 예측하여 추론을 수행합니다. 이는 🤗Transformers에서 <code>generate()</code> 메서드에 의해 내부적으로 구현됩니다. <code>predict_with_generate=True</code>로 설정하면 <code>Seq2SeqTrainer</code>를 사용하여 위와 같은 방법으로 모델 평가를 수행할 수 있습니다.</p>
+<p>번역에 사용되는 전통적인 평가지표(metric)는 <a href="https://en.wikipedia.org/wiki/BLEU">BLEU 스코어</a>로서 Kishore Papineni et al.에 의해 <a href="https://aclanthology.org/P02-1040.pdf">2002년 논문</a>에
+서 소개되었습니다. BLEU 점수는 번역 결과가 레이블에 얼마나 가까운지를 평가합니다. 모델에서 생성된 번역 결과의 명료성 또는 
+문법적 정확성을 측정하지는 않습니다. 단지 통계 규칙을 사용하여 생성된 출력 내의 모든 단어가 타깃(target)에도 존재하는지를
+ 측정합니다. 또한, 타깃(target)에는 반복되지 않음에도 불구하고 번역 결과에서 동일한 단어가 계속 반복될 경우에도 패널티를
+ 부여합니다. 이는 모델이 <code>"the the the the the"</code>와 같은 문장을 출력하는 것을 방지합니다. 또한 타깃(target)보다 짧은 문장을 출력하는 것에도 패널티를 부과합니다. 이는 <code>"the"</code>와 같은 문장이 출력되는 모델을 미연에 방지하기 위해서 입니다.</p>
+<p>BLEU 점수의 한 가지 약점은 이미 토큰화된 텍스트를 대상으로 하기 때문에 다른 토크나이저를 사용하는 모델 간의 점수를 
+비교하기 어렵습니다. 따라서 오늘날 번역 모델을 벤치마킹하는데 가장 일반적으로 사용되는 평가지표(metric)는 토큰화 단계를 
+표준화하여 이러한 약점을 해결하는 <a href="https://github.com/mjpost/sacrebleu">SacreBLEU</a>입니다. 이 평가지표를 사용하려면 먼저 SacreBLEU 라이브러리를 설치해야 합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>!python3 -m pip install sacrebleu
+</code></pre>
+<p>그런 다음 3장에서 했던 것처럼 <code>load_metric()</code>을 통해 로드할 수 있습니다.</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> datasets <span class="hljs-keyword">import</span> load_metric
+
+metric = load_metric(<span class="hljs-string">"sacrebleu"</span>)
+</code></pre>
+<p>이 메트릭은 텍스트를 입력(inputs) 및 타깃(targets)으로 사용합니다. 동일한 문장에 대해 허용 가능한 번역 
+결과가 여러 개 있기 때문에 여러 허용 가능한 대상을 입력받도록 설계되었습니다. 우리가 사용하는 데이터셋은 하나만 제공하지만 
+NLP에서 여러 문장을 레이블로 제공하는 데이터셋들도 많이 존재합니다. 따라서 예측(predictions)은 문장 리스트여야 
+하지만 정답(references)은 문장 리스트의 리스트라야 합니다.</p>
+<p>예를 한번 봅시다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>predictions = [
+    <span class="hljs-string">"This plugin lets you translate web pages between several languages automatically."</span>
+]
+
+references = [
+    [
+        <span class="hljs-string">"This plugin allows you to automatically translate web pages between several languages."</span>
+    ]
+]
+metric.compute(predictions=predictions, references=references)
+</code></pre>
+<p>BLEU 점수가 46.75로 나왔고 그 점수가 나쁘지 않습니다. 참고로 <a href="https://arxiv.org/pdf/1706.03762.pdf">"Attention Is All You Need" 논문</a>의 원래 트랜스포머(Transformer) 모델은 영어와 프랑스어 간의 비슷한 번역 작업에서 BLEU 점수 41.8을 달성했습니다! <code>counts</code> 및 <code>bp</code>와 같은 개별 평가지표에 대한 자세한 내용은 <a href="https://github.com/mjpost/sacrebleu/blob/078c440168c6adc89ba75fe6d63f0d922d42bcfe/sacrebleu/metrics/bleu.py#L74">SacreBLEU 저장소</a>를 참조하세요. 반면에, 번역 모델에서 자주 나오는 두 가지 잘못된 유형의 예측(반복이 많거나 너무 짧음)으로 시도하면 다소 나쁜 BLEU 점수를 얻게 됩니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>predictions = [<span class="hljs-string">"This This This This"</span>]
+references = [
+    [
+        <span class="hljs-string">"This plugin allows you to automatically translate web pages between several languages."</span>
+    ]
+]
+metric.compute(predictions=predictions, references=references)
+</code></pre>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>predictions = [<span class="hljs-string">"This plugin"</span>]
+references = [
+    [
+        <span class="hljs-string">"This plugin allows you to automatically translate web pages between several languages."</span>
+    ]
+]
+metric.compute(predictions=predictions, references=references)
+</code></pre>
+<p>점수는 0에서 100까지 계산될 수 있으며 높을수록 좋습니다. </p>
+<p>모델 출력에서 평가지표(metric)가 사용할 수 있는 텍스트로 변환하기 위해서 <code>tokenizer.batch_decode()</code> 메서드를 사용합니다. 레이블(정답)에서는 모든 -100을 제거하면 됩니다(토크나이저는 패딩 토큰에 대해 자동으로 동일한 작업을 수행함):</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+
+
+<span class="hljs-keyword">def</span> <span class="hljs-title function_">compute_metrics</span>(<span class="hljs-params">eval_preds</span>):
+    preds, labels = eval_preds
+    <span class="hljs-comment"># 모델이 예측 로짓(logits)외에 다른 것을 리턴하는 경우.</span>
+    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(preds, <span class="hljs-built_in">tuple</span>):
+        preds = preds[<span class="hljs-number">0</span>]
+
+    decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=<span class="hljs-literal">True</span>)
+
+    <span class="hljs-comment"># -100은 건너뛴다.</span>
+    labels = np.where(labels != -<span class="hljs-number">100</span>, labels, tokenizer.pad_token_id)
+    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=<span class="hljs-literal">True</span>)
+
+    <span class="hljs-comment"># 단순 후처리</span>
+    decoded_preds = [pred.strip() <span class="hljs-keyword">for</span> pred <span class="hljs-keyword">in</span> decoded_preds]
+    decoded_labels = [[label.strip()] <span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> decoded_labels]
+
+    result = metric.compute(predictions=decoded_preds, references=decoded_labels)
+    <span class="hljs-keyword">return</span> {<span class="hljs-string">"bleu"</span>: result[<span class="hljs-string">"score"</span>]}
+</code></pre>
+<p>이제 이 작업이 완료되었으므로 모델을 미세 조정할 준비가 되었습니다!</p>
+<h3 id="_3">모델을 미세 조정하기</h3>
+<p>첫 번째 단계는 Hugging Face에 로그인하는 것입니다. 이로써 결과를 Model Hub에 업로드할 수 있습니다. 주피터 노트북에는 이를 도와주는 편리한 기능이 있습니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> huggingface_hub <span class="hljs-keyword">import</span> notebook_login
+
+notebook_login()
+</code></pre>
+<p>그러면 Hugging Face 로그인 자격 증명을 입력할 수 있는 위젯이 표시됩니다.</p>
+<p>노트북에서 작업하지 않는 경우 터미널에 다음 줄을 입력하기만 하면 됩니다:</p>
+<p><code>huggingface-cli login</code></p>
+<p>이 작업이 완료되면 <code>Seq2SeqTrainingArguments</code>를 정의할 수 있습니다. <code>Trainer</code>와 마찬가지로 몇 가지 필드가 더 포함된 <code>TrainingArguments</code>의 하위 클래스를 사용합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> Seq2SeqTrainingArguments
+
+args = Seq2SeqTrainingArguments(
+    <span class="hljs-string">f"marian-finetuned-kde4-en-to-fr"</span>,
+    evaluation_strategy=<span class="hljs-string">"no"</span>,
+    save_strategy=<span class="hljs-string">"epoch"</span>,
+    learning_rate=<span class="hljs-number">2e-5</span>,
+    per_device_train_batch_size=<span class="hljs-number">32</span>,
+    per_device_eval_batch_size=<span class="hljs-number">64</span>,
+    weight_decay=<span class="hljs-number">0.01</span>,
+    save_total_limit=<span class="hljs-number">3</span>,
+    num_train_epochs=<span class="hljs-number">3</span>,
+    predict_with_generate=<span class="hljs-literal">True</span>,
+    fp16=<span class="hljs-literal">True</span>,
+    push_to_hub=<span class="hljs-literal">True</span>,
+)
+</code></pre>
+<p>일반적인 하이퍼파라미터(예: 학습률, 에포크 수, 배치 크기 및 일부 가중치 감소)를 제외하고, 다음은 이전 섹션에서 본 것과 비교하여 몇 가지 변경 사항입니다:</p>
+<ul>
+<li>
+<p>평가에 시간이 걸리므로 정기적인 평가를 설정하지 않습니다. 우리는 학습 전과 후에 모델을 한 번만 평가할 것입니다.</p>
+</li>
+<li>
+<p><code>fp16=True</code>로 설정하여 최신 GPU에서 학습 속도를 높입니다.</p>
+</li>
+<li>
+<p>위에서 설명한 것처럼 <code>predict_with_generate=True</code>로 설정합니다.</p>
+</li>
+<li>
+<p><code>push_to_hub=True</code>를 사용하여 각 에포크(epoch)가 끝날 때 Hub에 모델을 업로드합니다.</p>
+</li>
+</ul>
+<p><code>hub_model_id</code> 인수를 사용하여 푸시하려는 저장소의 전체 이름을 지정할 수 있습니다(특히, 조직에 푸시하려면 이 인수를 사용해야 함). 예를 들어, 모델을 <code>huggingface-course</code> 조직에 푸시할 때 <code>hub_model_id="huggingface-course/marian-finetuned-kde4-en-to-fr"</code>을 <code>Seq2SeqTrainingArguments</code>에 추가하면 됩니다. 기본적으로 사용되는 저장소는 네임스페이스에 존재하고 설정한 출력 디렉토리의 이름을 따서 명명되므로 이 경우에는 <code>"spasis/marian-finetuned-kde4-en-to-fr"</code>(우리가 이 섹션의 시작 부분에서 링크한 모델)이 됩니다.</p>
+<blockquote>
+<p>💡 사용하는 출력 디렉토리가 이미 존재하는 경우 푸시하려는 저장소의 로컬 클론이어야 합니다. 그렇지 않은 경우 <code>Seq2SeqTrainer</code>를 정의할 때 오류가 발생하기 때문에 새로운 이름을 설정해야 합니다.</p>
+</blockquote>
+<p>마지막으로 모든 것을 <code>Seq2SeqTrainer</code>에 전달합니다.</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> Seq2SeqTrainer
+
+trainer = Seq2SeqTrainer(
+    model,
+    args,
+    train_dataset=tokenized_datasets[<span class="hljs-string">"train"</span>],
+    eval_dataset=tokenized_datasets[<span class="hljs-string">"validation"</span>],
+    data_collator=data_collator,
+    tokenizer=tokenizer,
+    compute_metrics=compute_metrics,
+)
+</code></pre>
+<p>학습하기 전에 먼저 초기 모델이 얻는 점수를 살펴보고, 미세 조정으로 상황을 악화시키고 있지 않은지 다시 확인합니다. 이 명령은 다소 시간이 걸립니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>trainer.evaluate(max_length=max_target_length)
+</code></pre>
+<p>BLEU 점수 39는 그리 나쁘지 않은데, 이는 우리가 선택한 모델이 이미 영어 문장을 프랑스어 문장으로 번역하는데 효과적이다는 사실을 반영합니다.</p>
+<p>다음으로 본격적으로 학습을 진행합니다. 역시 시간이 좀 걸립니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>trainer.train()
+</code></pre>
+<p>학습이 진행되는 동안 모델이 저장될 때마다(여기서는 모든 에포크마다) 백그라운드에서 모델이 허브에 업로드됩니다. 이런 방식으로 필요한 경우 다른 머신에서 학습을 재개할 수 있습니다.</p>
+<p>학습이 완료되면 모델을 다시 평가해 봅시다. BLEU 점수가 개선되었기를 바랍니다!</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>trainer.evaluate(max_length=max_target_length)
+</code></pre>
+<p>거의 14포인트 개선되었네요. 좋습니다.</p>
+<p>마지막으로, <code>push_to_hub()</code> 메서드를 사용하여 최신 버전의 모델을 업로드했는지 확인합니다. <code>Trainer</code>는
+ 모든 평가 결과가 포함된 모델 카드의 초안을 작성하여 업로드합니다. 이 모델 카드에는 Model Hub가 추론 데모용 위젯을 
+선택하는데 도움이 되는 메타데이터가 포함되어 있습니다. 일반적으로 모델 클래스에서 올바른 위젯을 유추할 수 있으므로 아무 것도 할
+ 필요가 없지만, 이 경우 동일한 모델 클래스를 모든 종류의 sequence-to-sequence 문제에 사용할 수 있으므로 번역
+ 모델이라고 지정합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>trainer.push_to_hub(tags=<span class="hljs-string">"tanslation"</span>, commit_message=<span class="hljs-string">"Training complete"</span>)
+</code></pre>
+<p>위 명령은 방금 수행한 커밋의 URL을 반환합니다.max_target_length서 Model Hub의 추론 위젯을 사용하여
+ 모델을 테스트하고 친구와 공유할 수 있습니다. 번역 작업을 위해서 모델을 성공적으로 미세 조정했습니다. 축하합니다!</p>
+<p>학습 루프에 대해 좀 더 자세히 알고 싶다면 이제 🤗Accelerate를 사용하여 동일한 작업을 수행하는 방법을 보여드리겠습니다.</p>
+<h2 id="custom-training-loop">맞춤형 학습 루프 (Custom Training Loop)</h2>
+<p>이제 전체 학습 루프(full training loop)를 살펴보고 필요한 부분을 쉽게 커스터마이징할 수 있습니다. 7.2와 7.3에서 했던 것과 매우 유사할 것입니다.</p>
+<h3 id="_4">학습을 위한 모든 사항 준비하기</h3>
+<p>아래 내용은 이미 몇번씩 공부했으므로 코드를 매우 빠르게 살펴보겠습니다. 먼저 데이터셋을 <code>"torch"</code> 형식으로 설정한 후 데이터셋에서 <code>DataLoader</code>를 빌드하여 PyTorch 텐서를 얻습니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> torch.utils.data <span class="hljs-keyword">import</span> DataLoader
+
+tokenized_datasets.set_format(<span class="hljs-string">"torch"</span>)
+train_dataloader = DataLoader(
+    tokenized_datasets[<span class="hljs-string">"train"</span>],
+    shuffle=<span class="hljs-literal">True</span>,
+    collate_fn=data_collator,
+    batch_size=<span class="hljs-number">8</span>,
+)
+eval_dataloader = DataLoader(
+    tokenized_datasets[<span class="hljs-string">"validation"</span>], 
+    collate_fn=data_collator, 
+    batch_size=<span class="hljs-number">8</span>
+)
+</code></pre>
+<p>다음으로 이전의 미세 조정을 계속해서 수행하지 않고 사전 학습된 모델에서 다시 시작하도록 모델을 다시 인스턴스화합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>model = AutoModelForSeq2SeqLM.from_pretrained(model_checkpoint)
+</code></pre>
+<p>이제 옵티마이저(optimizer)가 필요합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> AdamW
+
+optimizer = AdamW(model.parameters(), lr=<span class="hljs-number">2e-5</span>)
+</code></pre>
+<p>지금까지 준비된 모든 객체를 <code>Accelerator.prepare()</code> 메서드에 보낼 수 있습니다. Colab 노트북에서 TPU를 이용하여 학습하려면 이 모든 코드를 학습 함수로 이동해야 하며 <code>Accelerator</code>를 인스턴스화하는 셀을 실행해서는 안됩니다.</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> accelerate <span class="hljs-keyword">import</span> Accelerator
+
+accelerator = Accelerator()
+model, optimizer, train_dataloader, eval_dataloader = accelerator.prepare(
+    model, optimizer, train_dataloader, eval_dataloader
+)
+</code></pre>
+<p>이제 <code>train_dataloader</code>를 <code>accelerator.prepare()</code>로 보냈으므로 길이를 사용하여 학습 단계 수를 계산할 수 있습니다. <code>accelerator.prepare()</code>가 <code>DataLoader</code>의 길이를 변경하므로 항상 dataloader를 준비한 후에 이 작업을 수행해야 합니다. 지정된 learning rate에서 0으로 변화되는 전통적인 선형 학습 스케줄러를 사용합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> get_scheduler
+
+num_train_epochs = <span class="hljs-number">3</span>
+num_update_steps_per_epoch = <span class="hljs-built_in">len</span>(train_dataloader)
+num_training_steps = num_train_epochs * num_update_steps_per_epoch
+
+lr_scheduler = get_scheduler(
+    <span class="hljs-string">"linear"</span>,
+    optimizer=optimizer,
+    num_warmup_steps=<span class="hljs-number">0</span>,
+    num_training_steps=num_training_steps,
+)
+</code></pre>
+<p>마지막으로 모델을 Hub로 푸시하려면 작업 폴더에 <code>Repository</code> 객체를 생성해야 합니다. 아직 로그인하지 않았다면 먼저 Hugging Face Hub에 로그인합니다. 모델에 부여하려는 모델 ID를 기반으로 저장소 이름을 결정합니다. <code>repo_name</code>을 원하는 대로 자유롭게 지정해도 상관없습니다. 사용자 이름만 포함하면 <code>get_full_repo_name()</code>이 알아서 이름을 출력합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> huggingface_hub <span class="hljs-keyword">import</span> Repository, get_full_repo_name
+
+model_name = <span class="hljs-string">"marian-finetuned-kde4-en-to-fr-accelerate"</span>
+repo_name = get_full_repo_name(model_name)
+repo_name
+</code></pre>
+<p>그런 다음 해당 저장소를 로컬 폴더에 복제할 수 있습니다. 이미 존재하는 경우 이 로컬 폴더는 작업 중인 리포지토리의 복제본이어야 합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>output_dir = <span class="hljs-string">"marian-finetuned-kde4-en-to-fr-accelerate"</span>
+repo = Repository(output_dir, clone_from=repo_name)
+</code></pre>
+<p>이제 <code>repo.push_to_hub()</code> 메서드를 호출하여 <code>output_dir</code>에 저장한 모든 것을 업로드할 수 있습니다. 이렇게 하면 각 에포크가 끝날 때 중간 모델을 업로드하는 데 도움이 됩니다.</p>
+<h3 id="training-loop">학습 루프 (Training loop)</h3>
+<p>이제 전체 학습 루프를 작성할 준비가 되었습니다. 평가 부분을 단순화하기 위해 예측과 레이블을 가져와 메트릭 객체가 예상하는 문자열 목록으로 변환하는 <code>postprocess()</code> 함수를 정의합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">def</span> <span class="hljs-title function_">postprocess</span>(<span class="hljs-params">predictions, labels</span>):
+    predictions = predictions.cpu().numpy()
+    labels = labels.cpu().numpy()
+
+    decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=<span class="hljs-literal">True</span>)
+
+    <span class="hljs-comment"># Replace -100 in the labels as we can't decode them</span>
+    labels = np.where(labels != -<span class="hljs-number">100</span>, labels, tokenizer.pad_token_id)
+    decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=<span class="hljs-literal">True</span>)
+
+    <span class="hljs-comment"># Some simple post-processing</span>
+    decoded_preds = [pred.strip() <span class="hljs-keyword">for</span> pred <span class="hljs-keyword">in</span> decoded_preds]
+    decoded_labels = [[label.strip()] <span class="hljs-keyword">for</span> label <span class="hljs-keyword">in</span> decoded_labels]
+    <span class="hljs-keyword">return</span> decoded_preds, decoded_labels
+</code></pre>
+<p>학습 루프는 평가 부분에서 몇가지 차이점을 제외하고 섹션 2 및 3의 루프와 매우 유사하므로 이 차이점에 초점을 맞추겠습니다!</p>
+<p>가장 먼저 주목해야 할 점은 예측을 수행하기 위해 <code>generate()</code> 메서드를 사용한다는 것입니다. 그러나 이것은 기본 모델의 메서드입니다. 🤗Accelerate가 <code>prepare()</code> 메서드에서 생성한 래핑된 모델이 아닙니다. 그래서 먼저 모델의 래핑 부분을 풀고 이 메서드를 호출합니다.</p>
+<p>두 번째 차이점은 토큰 분류와 마찬가지로 두 개의 프로세스가 입력과 레이블을 다른 모양으로 패딩했을 수 있으므로 <code>gather()</code> 메서드를 호출하기 전에 <code>Accelerator.pad_across_processes()</code>를 사용하여 예측 결과와 레이블을 동일한 모양으로 만듭니다. 이렇게 하지 않으면 평가에 오류가 발생하거나 프로세스가 영원히 중단됩니다.</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> tqdm.auto <span class="hljs-keyword">import</span> tqdm
+<span class="hljs-keyword">import</span> torch
+<span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np
+
+progress_bar = tqdm(<span class="hljs-built_in">range</span>(num_training_steps))
+
+<span class="hljs-keyword">for</span> epoch <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(num_train_epochs):
+    <span class="hljs-comment"># 학습</span>
+    model.train()
+    <span class="hljs-keyword">for</span> batch <span class="hljs-keyword">in</span> train_dataloader:
+        outputs = model(**batch)
+        loss = outputs.loss
+        accelerator.backward(loss)
+
+        optimizer.step()
+        lr_scheduler.step()
+        optimizer.zero_grad()
+        progress_bar.update(<span class="hljs-number">1</span>)
+
+    <span class="hljs-comment"># 평가</span>
+    model.<span class="hljs-built_in">eval</span>()
+    <span class="hljs-keyword">for</span> batch <span class="hljs-keyword">in</span> tqdm(eval_dataloader):
+        <span class="hljs-keyword">with</span> torch.no_grad():
+            generated_tokens = accelerator.unwrap_model(model).generate(
+                batch[<span class="hljs-string">"input_ids"</span>],
+                attention_mask=batch[<span class="hljs-string">"attention_mask"</span>],
+                max_length=<span class="hljs-number">128</span>,
+            )
+        labels = batch[<span class="hljs-string">"labels"</span>]
+
+        <span class="hljs-comment"># 예측과 레이블을 모으기 전에 함께 패딩 수행</span>
+        generated_tokens = accelerator.pad_across_processes(
+            generated_tokens, dim=<span class="hljs-number">1</span>, pad_index=tokenizer.pad_token_id
+        )
+        labels = accelerator.pad_across_processes(labels, dim=<span class="hljs-number">1</span>, pad_index=-<span class="hljs-number">100</span>)
+
+        predictions_gathered = accelerator.gather(generated_tokens)
+        labels_gathered = accelerator.gather(labels)
+
+        decoded_preds, decoded_labels = postprocess(predictions_gathered, labels_gathered)
+        metric.add_batch(predictions=decoded_preds, references=decoded_labels)
+
+    results = metric.compute()
+    <span class="hljs-built_in">print</span>(<span class="hljs-string">f"epoch <span class="hljs-subst">{epoch}</span>, BLEU score: <span class="hljs-subst">{results[<span class="hljs-string">'score'</span>]:<span class="hljs-number">.2</span>f}</span>"</span>)
+
+    <span class="hljs-comment"># 저장 및 업로드</span>
+    accelerator.wait_for_everyone()
+    unwrapped_model = accelerator.unwrap_model(model)
+    unwrapped_model.save_pretrained(output_dir, save_function=accelerator.save)
+    <span class="hljs-keyword">if</span> accelerator.is_main_process:
+        tokenizer.save_pretrained(output_dir)
+        repo.push_to_hub(
+            commit_message=<span class="hljs-string">f"Training in progress epoch <span class="hljs-subst">{epoch}</span>"</span>, blocking=<span class="hljs-literal">False</span>
+        )
+</code></pre>
+<p>이 작업이 완료되면 <code>Seq2SeqTrainer</code>로 학습된 모델과 매우 유사한 결과를 갖는 모델을 갖게 됩니다. <a href="https://huggingface.co/huggingface-course/marian-finetuned-kde4-en-to-fr-accelerate"><em>huggingface-course/marian-finetuned-kde4-en-to-fr-accelerate</em></a>에서 이 코드를 사용하여 훈련한 것을 확인할 수 있습니다. 그리고 위 코드를 편집하여 학습 루프를 수정하고 테스트해 볼 수 있습니다.</p>
+<h2 id="_5">미세 조정된 모델 사용하기</h2>
+<p>앞에서 추론 위젯을 사용하여 Model Hub에서 미세 조정한 모델을 사용하는 방법을 이미 살펴봤습니다. 파이프라인을 활용하여 로컬로 사용하려면 적절한 모델 식별자를 지정하기만 하면 됩니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button><span class="hljs-keyword">from</span> transformers <span class="hljs-keyword">import</span> pipeline
+
+model_checkpoint = <span class="hljs-string">"huggingface-course/marian-finetuned-kde4-en-to-fr"</span>
+translator = pipeline(<span class="hljs-string">"translation"</span>, model=model_checkpoint)
+translator(<span class="hljs-string">"Default to expanded threads"</span>)
+</code></pre>
+<p>예상대로, 사전 학습된 모델은 해당 지식을 우리가 미세 조정한 말뭉치에 적용했으며 영어 단어 "threads"를 그대로 두는 대신 이제 프랑스어 공식 버전으로 번역합니다. "plugin"에 대해서도 동일합니다:</p>
+<pre><code class="language-python hljs md-csc-wrap"><button class="md-csc-button btn btn-xs btn-default"><span class="copymsg">Copy</span></button>translator(
+    <span class="hljs-string">"Unable to import %1 using the OFX importer plugin. This file is not the correct format."</span>
+)
+</code></pre>
+<p>도메인 어뎁테이션의 또 다른 좋은 예시를 봤습니다!</p>
+<blockquote>
+<p>✏️ <strong>Your turn!</strong> 앞에서 살펴본 "email"이라는 단어가 포함된 샘플에 대해서 모델은 어떤 번역 결과를 내나요?</p>
+</blockquote>
+</div>
+
+<div class="muted text-right" style="font-size: 0.9em;margin:10px 0;">
+    
+    마지막 편집일시 : 2022년 5월 23일 8:51 오후
+    
+</div>
+
+<!-- google adsense -->
+<!-- PC -->
+
+    
+        <div style="margin:30px 0;">
+            <!-- 위키독스 포인트 광고 -->
+            <div class="clearfix">
+                <div class="pull-left" style="margin-right:30px">
+                    <script async="" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/f_004.txt" type="text/javascript"></script>
+                    <ins class="adsbygoogle" style="display:inline-block;width:336px;height:280px" data-ad-client="ca-pub-9470517771012578" data-ad-channel="6628864207" data-adsbygoogle-status="done" data-ad-status="filled"><div id="aswift_2_host" style="border: medium none; height: 280px; width: 336px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block;" tabindex="0" title="Advertisement" aria-label="Advertisement"><iframe id="aswift_2" name="aswift_2" style="left:0;position:absolute;top:0;border:0;width:336px;height:280px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/ads.html" data-google-container-id="a!3" data-google-query-id="CJCSm4uY4_8CFWBBwgUdxFABXQ" data-load-complete="true" width="336" height="280" frameborder="0"></iframe></div></ins>
+                    <script type="text/javascript">
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+                <div class="pull-left">
+                    <script async="" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/f_004.txt" type="text/javascript"></script>
+                    <ins class="adsbygoogle" style="display:inline-block;width:336px;height:280px" data-ad-client="ca-pub-9470517771012578" data-ad-channel="6628864207" data-adsbygoogle-status="done" data-ad-status="filled"><div id="aswift_3_host" style="border: medium none; height: 280px; width: 336px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block;" tabindex="0" title="Advertisement" aria-label="Advertisement"><iframe id="aswift_3" name="aswift_3" style="left:0;position:absolute;top:0;border:0;width:336px;height:280px;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/ads.html" data-google-container-id="a!4" data-google-query-id="CMTJm4uY4_8CFWZJwgUdFacCuw" data-load-complete="true" width="336" height="280" frameborder="0"></iframe></div></ins>
+                    <script type="text/javascript">
+                    (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            </div>
+        </div>
+    
+
+<!-- Mobile -->
+
+
+<!-- google adsense -->
+
+<!--
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/ko_KR/sdk.js#xfbml=1&version=v2.10&appId=189410671132641";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="clearfix">
+    <div class="fb-like" data-href="" data-layout="standard" data-action="like" data-size="small" data-show-faces="false" data-share="true"></div>
+    <div style="margin-top:2px; margin-right:5px;" class="pull-left">
+        <a href="https://twitter.com/share" class="twitter-share-button">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+    </div>
+</div>
+
+-->
+
+<div class="clearfix">
+    <a href="javascript:show_comments();" class="label label-info">댓글 0</a>
+    <a href="#myModal" data-toggle="modal" title="피드백을 남겨주세요" class="label label-info">피드백</a>
+</div>
+
+<div class="user_comments" style="display:none">
+
+    <div class="comments" id="page_all_comments">
+        
+
+
+
+
+
+
+    </div>
+
+    
+    <a href="https://wikidocs.net/loginForm" class="text-info" style="font-size:12px">※ 댓글 작성은 로그인이 필요합니다.</a>
+    <a href="#myModal" data-toggle="modal" style="font-size:12px">(또는 피드백을 이용해 주세요.)</a>
+    
+</div>
+
+<div class="page-prev-next">
+    
+<div class="clearfix">
+    <div class="pull-left">
+        <ul>
+            
+                <li><strong>이전글</strong> : <a href="javascript:page(166833)">2. 마스크 언어 모델(Masked Language Model) 미세조정</a></li>
+            
+            
+                <li><strong>다음글</strong> : <a href="javascript:page(166831)">4. 요약 (Summarization)</a></li>
+            
+        </ul>
+    </div>
+</div>
+
+
+</div>
+
+
+
+
+<a href="#top" class="label label-default back-to-top">
+    <span class="glyphicon glyphicon-arrow-up"></span>
+    TOP
+</a>
+
+
+<script type="text/javascript">
+var is_mobile = "False";
+$(document).ready(function () {
+    if (is_mobile == "True") {
+        if($(window).width() >= 768) {
+            // show toc
+            localStorage.toc = "show";
+            $('#toc_on').prop('checked', true);
+            $(".toc-checker").removeClass("hide");
+            $(".toc-checker").show();
+
+        }else {
+            // hide toc
+            localStorage.toc = "hide";
+            $('#toc_off').prop('checked', true);
+            $(".toc-checker").hide();
+        }
+        $(".mobile-toc").click(function() {
+            $('#toc_on').prop('checked', true);
+            $(".toc-checker").removeClass("hide");
+            $(".toc-checker").show();
+        });
+    }
+});    
+</script>
+
+    </div>
+
+</div>
+
+<div style="display:none" class="prev_next_indicator">
+    
+    <a class="prev_icon" href="javascript:page(166833)" role="button">
+        <span class="glyphicon glyphicon-chevron-left" style="font-size:2em;"></span>
+    </a>
+
+
+    <a class="next_icon" href="javascript:page(166831)" role="button">
+        <span class="glyphicon glyphicon-chevron-right" style="font-size:2em;"></span>
+    </a>
+
+
+</div>
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel" class="modal-title">이 페이지에 대한 피드백을 남겨주세요</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form" role="form">
+                    <input type="hidden" name="page_id" id="page_id" value="166832">
+                    <div class="form-group">
+                        <label class="control-label" for="email">답장받을 이메일 주소</label>
+                        <div class="">
+                            <input class="form-control" type="text" id="email" placeholder="Email">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="feedback">하고 싶은 말</label>
+                        <div class="controls">
+                            <textarea class="form-control" id="feedback" rows="5"></textarea>
+                        </div>
+                    </div>
+                    <p style="font-size:12px;">※ 피드백은 저자에게 e-메일로 전달됩니다.</p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" id="feedback_btn">전송하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="reportModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="reportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="reportModalLabel" class="modal-title">댓글을 신고합니다.</h3>
+            </div>
+            <div class="modal-body">
+                <form class="form" role="form">
+                    <input type="hidden" name="comment_id" id="comment_id">
+                    해당 댓글을 신고하시겠습니까? 댓글 신고는 다음과 같은 경우에 사용해주세요:
+                    <ol>
+                        <li>스팸 또는 광고성 내용이 포함된 경우</li>
+                        <li>욕설, 비방, 개인정보 유출 등 부적절한 내용이 포함된 경우</li>
+                        <li>저작권을 침해하는 내용이 포함된 경우</li>
+                    </ol>
+                    <div class="form-group">
+                        <label class="control-label" for="report">신고 사유를 입력해 주세요.</label>
+                        <div class="controls">
+                            <textarea class="form-control" id="report" rows="5"></textarea>
+                        </div>
+                    </div>
+                    <p style="font-size:12px;">※ 신고하신 내용은 관리자에게 전달되며, 확인 후 적절한 조치가 이루어집니다. 신고는 익명으로 처리되며, 신고자의 정보는 공개되지 않습니다.</p>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" data-dismiss="modal">Close</button>
+                <button class="btn btn-primary" id="report_btn">전송하기</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+
+
+
+<script type="text/javascript">
+$(document).ready(function () {
+    $('pre code').each(function(i, e) {
+        hljs.highlightElement(e);
+        $(e).html($(e).html()
+            .replace(/\[\[MARK\]\]/g,'<mark class="add">')
+            .replace(/\[\[\/MARK\]\]/g, '</mark>')
+            .replace(/\[\[SMARK\]\]/g,'<mark class="del"><strike>')
+            .replace(/\[\[\/SMARK\]\]/g, '</strike></mark>')
+            .replace(/\[\[\/.*SMARK.*\]\]/g, '</strike></mark>')
+            .replace(/\[\[.*SMARK.*\]\]/g,'<mark class="del"><strike>')
+            .replace(/\[\[\/.*MARK.*\]\]/g, '</mark>')
+            .replace(/\[\[.*MARK.*\]\]/g,'<mark class="add">')
+        );
+    });
+
+    $("pre code").addClass("md-csc-wrap");
+    $(".hljs").prepend("<button class='md-csc-button btn btn-xs btn-default'><span class='copymsg'>Copy</span></button>");
+
+    $(".md-csc-button").click(function(){
+        let text = $(this).parent().text();
+        text = text.substring(4); // "Copy 문자열 이후부터.."
+        const textArea = document.createElement('textarea');
+        textArea.textContent = text;
+        document.body.append(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        textArea.remove();
+
+        $(this).find(".copymsg").html("Copied!");
+        setTimeout(() => {
+            $(this).find(".copymsg").html("Copy");
+        }, 2000);
+    });
+});
+</script>
+
+<script>(function(){var js = "window['__CF$cv$params']={r:'7ddcd480ef51279e',m:'AVCSSVhe650obliuzHOUIYznQ80X7YHPMrYrPNrGQAY-1687859891-0-ATy2c4TYMRdoZiHOL11pQPTkF1tClR2r+hKgYCMlX3L2'};_cpo=document.createElement('script');_cpo.nonce='',_cpo.src='/cdn-cgi/challenge-platform/scripts/invisible.js',document.getElementsByTagName('head')[0].appendChild(_cpo);";var _0xh = document.createElement('iframe');_0xh.height = 1;_0xh.width = 1;_0xh.style.position = 'absolute';_0xh.style.top = 0;_0xh.style.left = 0;_0xh.style.border = 'none';_0xh.style.visibility = 'hidden';document.body.appendChild(_0xh);function handler() {var _0xi = _0xh.contentDocument || _0xh.contentWindow.document;if (_0xi) {var _0xj = _0xi.createElement('script');_0xj.nonce = '';_0xj.innerHTML = js;_0xi.getElementsByTagName('head')[0].appendChild(_0xj);}}if (document.readyState !== 'loading') {handler();} else if (window.addEventListener) {document.addEventListener('DOMContentLoaded', handler);} else {var prev = document.onreadystatechange || function () {};document.onreadystatechange = function (e) {prev(e);if (document.readyState !== 'loading') {document.onreadystatechange = prev;handler();}};}})();</script><iframe style="position: absolute; top: 0px; left: 0px; border: medium none; visibility: hidden;" width="1" height="1"></iframe><script defer="defer" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/v52afc6f149f6479b8c77fa569edb01181681764108816" integrity="sha512-jGCTpDpBAYDGNYR5ztKt4BQPGef1P0giN6ZGVUi835kFF88FOmmn8jBQWNgrNd8g/Yu421NdgWhwQoaOPFflDw==" data-cf-beacon="{&quot;rayId&quot;:&quot;7ddcd480ef51279e&quot;,&quot;token&quot;:&quot;63d42267f42e40ab89cc17432f52c5c2&quot;,&quot;version&quot;:&quot;2023.4.0&quot;,&quot;si&quot;:100}" crossorigin="anonymous"></script>
+
+
+<ins class="adsbygoogle adsbygoogle-noablate" style="display: none !important;" data-adsbygoogle-status="done" data-ad-status="unfilled"><div id="aswift_0_host" style="border: medium none; height: 0px; width: 0px; margin: 0px; padding: 0px; position: relative; visibility: visible; background-color: transparent; display: inline-block;" tabindex="0" title="Advertisement" aria-label="Advertisement"><iframe id="aswift_0" name="aswift_0" style="left:0;position:absolute;top:0;border:0;width:undefinedpx;height:undefinedpx;" sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-top-navigation-by-user-activation" marginwidth="0" marginheight="0" vspace="0" hspace="0" allowtransparency="true" scrolling="no" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/ads_004.html" data-google-container-id="a!1" data-load-complete="true" frameborder="0"></iframe></div></ins><iframe src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/aframe.html" style="display: none;" width="0" height="0"></iframe></body><iframe id="google_esf" name="google_esf" src="3.%20%EB%B2%88%EC%97%AD%20(Translation)%20-%20%F0%9F%A4%97Transformers%20(%EC%8B%A0%EA%B2%BD%EB%A7%9D%20%EC%96%B8%EC%96%B4%EB%AA%A8%EB%8D%B8%20%EB%9D%BC%EC%9D%B4%EB%B8%8C%EB%9F%AC%EB%A6%AC)%20%EA%B0%95%EC%A2%8C_files/zrt_lookup.html" style="display: none;"></iframe></html>

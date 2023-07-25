@@ -1,0 +1,609 @@
+html {
+    position: relative;
+    min-height: 100%;
+    /* font-size: 1em; */
+}
+
+body, input, select {
+    /* font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; */
+    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    color: #000;
+}
+
+body {
+    /* padding-top: 50px; */
+    /* Margin bottom by footer height */
+    margin-bottom: 120px;
+    /* font-size: 1.0em; */
+}
+
+textarea {
+    font-size:12px !important;
+    font-family: "굴림체",Monaco, Menlo, Consolas, "Courier New", monospace;
+}
+
+.navbar-inner {
+    /*height:55px;*/
+}
+
+.navbar {
+    margin:0;
+}
+
+blockquote {
+    padding:0;
+    font-size:inherit;
+}
+
+blockquote p {
+    padding:0;
+    margin:0;
+}
+
+pre {
+    border:0;
+    padding:0;
+    line-height: 1.67;
+}
+
+.menu-nav {
+    margin:0 !important;
+    padding:0 !important;
+    font-family: Consolas;
+    font-size: 18px;
+}
+.menu-btn {
+    margin-top:7px !important;
+}
+
+#logout_btn {
+    margin-left:5px;
+}
+
+/*index*/
+.index {
+}
+
+.book-item {
+    /*margin:20px;*/
+    /*margin-bottom:30px;*/
+}
+.book-detail {
+    color: #808080;
+    line-height: 1.8;
+    font-size:14px;
+}
+
+.book-image-box {
+    width:110px;
+    height:140px;
+
+    border: solid 1px #ccc;
+    padding:5px;
+
+    /*margin-left:-10px;*/
+    /*vertical-align: middle;*/
+    /*text-align: center;*/
+
+    position:relative;
+}
+
+.book-image {
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    margin:auto;
+    /*vertical-align: middle;*/
+    text-align: center;
+    max-width:100px;
+}
+
+.book-subject {
+    font-size:16px;
+    font-weight: bold;
+    margin-top:0;
+    color: #4183C4;
+}
+.book-author {
+    margin-top:10px;
+    /*color:#333;*/
+}
+.book-time {
+    /*color:#aaa;*/
+    /*font-size:12px;*/
+}
+
+.navbar-adv {
+    margin-left:10px !important;
+}
+
+.navbar-adv span {
+    font-size:12px;
+    font-weight: bold;
+}
+
+/* book */
+.recent_page_comments {
+    margin-top:20px;
+}
+
+/*page*/
+.content {
+    margin-top:20px;
+    margin-bottom:20px;
+}
+.content h1, h2, h3, h4, h5, h6 {
+    font-family: "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+.toc {
+    /*background-color: #f9f9f9;*/
+    /*padding:10px;*/
+    /* border:solid 1px #ccc; */
+    font-size:0.9em;
+    /*-webkit-border-radius: 4px;*/
+    /*-moz-border-radius: 4px;*/
+    /*border-radius: 4px;*/
+    /* padding:20px 20px; */
+    margin:0px;
+    display:none;
+}
+
+.toc-mobile {
+    margin-top:10px;
+    border-top:solid 1px #ddd;
+}
+
+.page .toc {
+    margin:0px;
+    display:block;
+}
+
+.toc-edit {
+    /* background-color: #f9f9f9; */
+}
+.toc-subject {
+    /* background-color: #f9f9f9; */
+    color: #003bb3;
+    font-size:14px;
+    font-weight:bold;
+    padding: 0px 10px 10px 10px;
+    /*padding:10px;*/
+    /*margin:5px 5px 10px 5px;*/
+
+    /*display:inline-block;*/
+    border-bottom:1px solid #ccc;
+}
+.toc ul {
+    margin:0;
+    padding:0px;
+}
+.toc li {
+    list-style: none;
+    margin:10px;
+}
+.selected_toc {
+    font-weight: bold;
+    color: #003bb3;
+    /* text-decoration: underline; */
+}
+
+.toc-open {
+    background-color: #f2f2f2;
+    padding:5px;
+    /*margin-top:10px;*/
+}
+
+.book-info {
+    margin:20px 0 15px 0;
+    /*font-size: 12px;*/
+    color:#808080;
+}
+
+.page {
+}
+
+.page-book-subject {
+    color:#fff;
+    /*font-weight: bold;*/
+    font-size:16px;
+    margin-top:7px;
+}
+
+.page-subject {
+    margin-top:0;
+    padding-bottom:10px;
+    border-bottom: solid 1px #666;
+}
+
+.page-prev-next {
+    /*background-color: #f9f9f9;*/
+    padding:10px 0 10px 0;
+    border-top:solid 1px #666;
+    margin-top:20px;
+    font-size: 0.9em;
+
+}
+.page-prev-next ul {
+    margin:0 !important;
+    padding:0 !important;
+}
+.page-prev-next li {
+    list-style: none;
+    margin:5px 5px 5px 0;
+}
+
+/*
+.footer {
+    border-top: solid 1px #f2f2f2;
+    margin-top:30px;
+    margin-bottom:30px;
+    padding-top:10px;
+
+    font-size:14px;
+}
+*/
+
+/*comments*/
+.user_comments {
+    /*display:none;*/
+}
+.comments, .pages {
+    /*border-top:solid 1px #666;*/
+    margin:10px 0 5px 0;
+    /*background-color: #fcfcfc;*/
+}
+.comments .comment, .pages .comment {
+    font-size:0.8em;
+    color:#333;
+    margin:0;
+    padding:10px 0;
+    /*border-bottom:solid 1px #333;*/
+}
+.comment_border_top {
+    border-top:dotted 1px #ccc;
+}
+.comment_border_bottom {
+    border-bottom:dotted 1px #ccc;
+}
+
+/* markdown toc */
+.page .toc {
+    background: #fefefe;
+    border:dotted 1px #ccc;
+    font-size:0.9em;
+    padding:10px;
+    /*display: inline-block;*/
+}
+.page .toc ul {
+    padding:5px;
+    margin:0;
+}
+
+.page .toc li {
+    list-style: decimal;
+    margin: 0 0 0 20px;
+    padding-bottom:5px;
+}
+
+.footnote {
+    font-size:12px;
+}
+
+.toc-area {
+    /*padding-bottom:10px;*/
+}
+
+.toc-area::-webkit-scrollbar {
+    /*display: none;*/
+}
+.toc-area::-webkit-scrollbar {
+    width: 5px;
+}
+
+.toc-area::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    border-radius: 10px;
+}
+
+.toc-area::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+
+
+.nano { background: #bba; width: 500px; height: 500px; }
+.nano .content { padding: 10px; }
+.nano .pane   { background: #888; }
+.nano .slider { background: #111; }
+
+.back-to-top {
+    position:fixed;
+    bottom: 1em;
+    right: 1em;
+
+}
+
+.back-to-home {
+    position:fixed;
+    top: 1em;
+    right: 1em;
+    cursor:pointer;
+}
+
+div.tip {
+    padding:0 15px;
+    border: solid 3px #ddd;
+    border-radius:0px;
+    /*background: #FFFCE4*/
+}
+
+.scrollable-menu {
+    height: auto;
+    overflow-x: hidden;
+}
+
+/* Hide for mobile, show later */
+.sidebar {
+  /*display: none;*/
+}
+@media (min-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: hidden; /* Scrollable contents if viewport is shorter than content. */
+    background-color: #fff;
+    border-right: 1px solid #ddd;
+    padding-bottom:20px;
+  }
+
+  .sidebar-edit {
+    /* top: 51px; */
+  }
+}
+
+
+.sidebar-padding {
+    padding:0 14%;
+}
+
+.prev_icon {
+    position: fixed;
+    top:50%;
+    left: 15%;
+    color:red;
+}
+
+.next_icon {
+    position: fixed;
+    top:50%;
+    right: 15%;
+}
+
+@media (max-width: 1400px){
+    .prev_icon { left : 5%;}
+    .next_icon { right : 5%;}
+}
+
+
+.prev_icon:link, .next_icon:link { color:#ccc; }
+.prev_icon:visited, .next_icon:visited { color: #ccc; }
+.prev_icon:hover, .next_icon:hover { color:#aaa !important; }
+.prev_icon:active, next_icon:active { color: #aaa; }
+
+
+.list-group-item:first-child {
+  border-top-right-radius: 0px !important;
+  border-top-left-radius: 0px !important;
+  border-top:0;
+}
+
+.list-group-item:last-child {
+  border-bottom-right-radius: 0px !important;
+  border-bottom-left-radius: 0px !important;
+}
+
+.list-group {
+    -webkit-box-shadow: 0;
+            box-shadow: 0;
+}
+
+.list-group-item {
+    border:0;
+}
+
+.list-group-item-mobile {
+    border:solid 1px #ddd;
+}
+
+.navbar-toc {
+    padding:0 20px 0 0px;
+    margin:0;
+    -webkit-box-shadow:none;
+    border-bottom: solid 1px #ddd;
+    border-right: solid 1px #ddd;
+}
+
+.list-group-toc {
+    -webkit-box-shadow: none;
+            box-shadow: none;
+}
+
+.page-depth {
+    padding:0;
+    margin-bottom:20px;
+}
+
+.page-depth .breadcrumb {
+    padding:0 !important;
+    background:#fff;
+    margin:0 !important;
+}
+
+.page-depth li {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.page-depth a {color:#333;cursor:pointer;}
+.page-depth a:hover {color:#000;}
+
+.page_child {
+    margin:30px 0 ;
+}
+
+.page_child ul {
+    padding-left:25px !important;
+}
+
+.page_child li {
+    list-style-type: square;
+}
+
+.page_child a {color:#888;}
+.page_child a:hover {color:#333;}
+
+.menu_link {color:#888; cursor:pointer;}
+.menu_link:hover {color:#333;text-decoration:none;}
+
+.home_link {color:#ccc;}
+.home_link:hover {color:#aaa;text-decoration:none;}
+
+.menu-wikidocs {
+    margin:10px 0;
+}
+
+.menu-wikidocs a {color:#eee; cursor:pointer;}
+.menu-wikidocs a:hover {color:#333;text-decoration:none;}
+
+.input-search {
+    width:100%;
+    padding:15px 15px;
+    border:0;
+    /*border-bottom:solid 1px #ccc;*/
+}
+
+.input-search:focus{
+    outline: none;
+}
+
+
+/* enable absolute positioning */
+.inner-addon {
+    position: relative;
+}
+
+/* style icon */
+.inner-addon .glyphicon {
+  position: absolute;
+  padding: 16px 15px;
+  pointer-events: none;
+  color: #aaa;
+}
+
+/* align icon */
+.left-addon .glyphicon  { left:  0px;}
+.right-addon .glyphicon { right: 0px;}
+
+/* add padding  */
+.left-addon input  { padding-left:  35px; }
+.right-addon input { padding-right: 30px; }
+
+/* menu-group */
+.menu-group {
+    position:fixed;
+    left:20px;
+    top:15px;
+    display:none;
+}
+
+.page-content {
+    margin-bottom:20px;
+    word-wrap: break-word;
+    width:100%;
+}
+
+/* 점프 투 플라스크, 점프 투 장고에서 사용 */
+.bookcode {
+    background-color: #E8E8E8;
+    border-radius: 3px;
+    display: block;
+    padding: .5em;
+    -webkit-text-size-adjust: none;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    font-family: Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Courier New,"맑은고딕",'Malgun Gothic';
+    /* font-family: Roboto Mono, Lucida Sans Typewriter, Lucida Console, monaco, Courrier, monospace; */
+    font-size: .85em
+}
+.bookcode span {
+    color:#BE284F;
+}
+
+
+.page-content h1,
+.page-content h2,
+.page-content h3,
+.page-content h4,
+.page-content h5,
+.page-content h6 {
+    margin: 2.0em 0 1.0em 0;
+    line-height: 1.33;
+    font-weight: 700;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    /* height: 160px; */
+    padding: 20px 0;
+    margin-top:20px;
+    background-color: #f5f5f5;
+}
+
+.main_bottom_ads {
+    /* border: solid 1px red; */
+    margin: 10px 0 30px 0;
+}
+
+
+.logo {
+    font-family: Consolas;
+}
+
+.page-content ul {
+    padding:0 0 0 20px;
+}
+
+.page-content ol {
+    padding:0 0 0 20px;
+}
+
+/** 오른쪽 플로팅 고정광고 CSS **/
+@media (max-width: 1650px){
+    #asideRight { display : none;}
+}
+
+#asideRight { 
+    float: right;
+    margin-top: -10000px;
+    margin-left: -40px;
+    padding: 0px 0px;
+    height:100%;
+    width: 200px;
+}
+
+#chaseRight {
+    position: fixed;
+}
+
